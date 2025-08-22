@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/customAppBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:elevation="4dp">
+
+    <!-- Title Row -->
+    <LinearLayout
+        android:id="@+id/titleRow"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <!-- Back Button (optional) -->
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            android:alpha="0.8"/>
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="E-Market"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <!-- Right Action Button (optional) -->
+        <ImageView
+            android:id="@+id/btnRightAction"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            android:alpha="0.8"/>
+
+    </LinearLayout>
+
+    <!-- Custom Content Area -->
+    <LinearLayout
+        android:id="@+id/customContentArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp"
+        android:visibility="gone">
+
+        <!-- This area will be populated by fragments -->
+
+    </LinearLayout>
+
+</LinearLayout> 

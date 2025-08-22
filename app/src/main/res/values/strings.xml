@@ -1,0 +1,129 @@
+<resources>
+    <string name="app_name">Shoply</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_favorites">Favoriler</string>
+    <string name="nav_cart">Sepet</string>
+    
+    <!-- Home Screen -->
+    <string name="home_products">Ürünler</string>
+    <string name="home_clear_filters">Filtreleri Temizle</string>
+    <string name="home_filter">Filtre</string>
+    <string name="home_sort">Sırala</string>
+    <string name="home_search_hint">Ürün ara…</string>
+    <string name="home_total_products">Toplam %d ürün</string>
+    <string name="home_total_products_format">(Toplam %d adet)</string>
+    <string name="home_no_products">Ürün bulunamadı</string>
+    <string name="home_error_message">Bir hata oluştu</string>
+    
+    <!-- Filter Screen -->
+    <string name="filter_title">Kategori Filtrele</string>
+    <string name="filter_clear">Temizle</string>
+    <string name="filter_apply">Uygula</string>
+    <string name="filter_all_categories">Tüm Kategoriler</string>
+    
+    <!-- Sort Screen -->
+    <string name="sort_title">Sıralama Seç</string>
+    <string name="sort_default">Varsayılan (Sıralama yok)</string>
+    <string name="sort_price_low_to_high">Fiyat (Düşükten Yükseğe)</string>
+    <string name="sort_price_high_to_low">Fiyat (Yüksekten Düşüğe)</string>
+    <string name="sort_rating_asc">Puanına göre ↑</string>
+    <string name="sort_rating_desc">Puanına göre ↓</string>
+    <string name="sort_discount_desc">İndirime göre ↓</string>
+    <string name="sort_stock_asc">Stok miktarına göre ↑</string>
+    <string name="sort_stock_desc">Stok miktarına göre ↓</string>
+    <string name="sort_name_a_to_z">Ada göre A→Z</string>
+    <string name="sort_name_z_to_a">Ada göre Z→A</string>
+    <string name="sort_rating">Değerlendirme</string>
+    
+    <!-- Product Detail -->
+    <string name="product_detail_title">Ürün Detayı</string>
+    <string name="product_detail_add_to_cart">Sepete Ekle</string>
+    <string name="product_detail_add_to_favorites">Favorilere Ekle</string>
+    <string name="product_detail_remove_from_favorites">Favorilerden Çıkar</string>
+    <string name="product_detail_added_to_cart">Başarıyla Sepete Eklendi!</string>
+    <string name="product_detail_discount">%%%d</string>
+    <string name="product_detail_price_format">%.2f₺</string>
+    <string name="product_detail_original_price_format">%.2f₺</string>
+    <string name="product_detail_description">Açıklama</string>
+    <string name="product_detail_reviews">Yorumlar</string>
+    <string name="product_detail_rating">Değerlendirme</string>
+    
+    <!-- Cart Screen -->
+    <string name="cart_title">SEPET</string>
+    <string name="cart_price_label">Fiyat:</string>
+    <string name="cart_discount_label">İndirim:</string>
+    <string name="cart_total_label">Toplam:</string>
+    <string name="cart_empty">Sepetiniz boş</string>
+    <string name="cart_total">Toplam: %.2f₺</string>
+    <string name="cart_checkout">Ödemeye Geç</string>
+    <string name="cart_remove_item">Ürünü Kaldır</string>
+    <string name="cart_quantity">Adet: %d</string>
+    <string name="cart_price_format">%.2f₺</string>
+    <string name="cart_discount_price_format">%.2f₺</string>
+    
+    <!-- Favorite Screen -->
+    <string name="favorite_title">FAVORİLER</string>
+    <string name="favorite_empty">Favori ürününüz yok</string>
+    <string name="favorite_price_format">%.2f₺</string>
+    <string name="favorite_remove">Favorilerden Çıkar</string>
+    
+    <!-- Checkout Screen -->
+    <string name="checkout_title">ÖDEME</string>
+    <string name="checkout_name">Ad Soyad</string>
+    <string name="checkout_email">E-posta</string>
+    <string name="checkout_phone">Telefon</string>
+    <string name="checkout_phone_required">Telefon numarası gerekli</string>
+    <string name="checkout_name_required">Ad soyad gerekli</string>
+    <string name="checkout_email_required">E-posta gerekli</string>
+    <string name="checkout_email_invalid">Geçersiz e-posta formatı</string>
+    <string name="checkout_phone_invalid">Geçersiz telefon formatı</string>
+    <string name="checkout_total_amount">Toplam Tutar: %.2f₺</string>
+    <string name="checkout_confirm_order">Siparişi Onayla</string>
+    <string name="checkout_confirm_order_button">SİPARİŞİ ONAYLA</string>
+    <string name="checkout_success">Siparişiniz başarıyla oluşturuldu!</string>
+    <string name="checkout_error">Sipariş oluşturulurken bir hata oluştu</string>
+    
+    <!-- Order Success Screen -->
+    <string name="order_success_title">Siparişiniz Alındı!</string>
+    <string name="order_success_message">Siparişiniz başarıyla oluşturuldu. Sipariş numaranız: #%s</string>
+    <string name="order_success_thank_you">Teşekkür ederiz!</string>
+    <string name="order_success_continue_shopping">Alışverişe Devam Et</string>
+    <string name="order_success_go_home">Anasayfaya Dön</string>
+    <string name="order_success_order_details">Sipariş Detayları</string>
+    <string name="order_success_estimated_delivery">Tahmini Teslimat: 3–5 iş günü</string>
+    <string name="order_success_tracking_info">Siparişinizi takip etmek için e-posta adresinizi kontrol edin.</string>
+    
+    <!-- Common -->
+    <string name="common_loading">Yükleniyor…</string>
+    
+    <!-- Error Messages -->
+    <string name="error_empty_response">Sunucudan boş yanıt geldi</string>
+    <string name="error_loading_products">Ürünler yüklenirken bir hata oluştu</string>
+    <string name="error_icon">Hata ikonu</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="splash_subtitle">Modern Alışveriş</string>
+    <string name="error_client">İstemci hatası</string>
+    <string name="error_server">Sunucu hatası</string>
+    <string name="error_unexpected_http">Beklenmeyen HTTP kodu: %d</string>
+    <string name="error_unknown_brand">Bilinmeyen Marka</string>
+    <string name="common_error">Hata</string>
+    <string name="common_success">Başarılı</string>
+    <string name="common_cancel">İptal</string>
+    <string name="common_ok">Tamam</string>
+    <string name="common_yes">Evet</string>
+    <string name="common_no">Hayır</string>
+    <string name="common_retry">Tekrar Dene</string>
+    <string name="common_back">Geri</string>
+    <string name="common_next">İleri</string>
+    <string name="common_previous">Önceki</string>
+    
+
+    
+    <!-- Currency -->
+    <string name="currency_format">%.2f₺</string>
+    <string name="currency_symbol">₺</string>
+    
+
+</resources>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.cartapp.presentation.home.HomeFragment"
+        android:label="@string/nav_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_filterFragment"
+            app:destination="@id/filterFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.cartapp.presentation.favorite.FavoriteFragment"
+        android:label="@string/nav_favorites" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.cartapp.presentation.cart.CartFragment"
+        android:label="@string/nav_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <!-- Ürün detayı ve checkout sayfaları da buraya eklenebilir -->
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.example.cartapp.presentation.productdetail.ProductDetailFragment"
+        android:label="@string/product_detail_title" >
+        <argument
+            android:name="productId"
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_productDetailFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.cartapp.presentation.checkout.CheckoutFragment"
+        android:label="@string/checkout_title" >
+        <action
+            android:id="@+id/action_checkoutFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_checkoutFragment_to_orderSuccessFragment"
+            app:destination="@id/orderSuccessFragment">
+            <argument
+                android:name="orderNumber"
+                app:argType="string" />
+        </action>
+    </fragment>
+    
+    <fragment
+        android:id="@+id/orderSuccessFragment"
+        android:name="com.example.cartapp.presentation.ordersuccess.OrderSuccessFragment"
+        android:label="@string/order_success_title" >
+        <argument
+            android:name="orderNumber"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_orderSuccessFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="com.example.cartapp.presentation.filter.FilterFragment"
+        android:label="@string/filter_title" />
+</navigation>

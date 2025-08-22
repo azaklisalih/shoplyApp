@@ -1,0 +1,129 @@
+<resources>
+    <string name="app_name">Shoply</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_cart">Cart</string>
+    
+    <!-- Home Screen -->
+    <string name="home_products">Products</string>
+    <string name="home_clear_filters">Clear Filters</string>
+    <string name="home_filter">Filter</string>
+    <string name="home_sort">Sort</string>
+    <string name="home_search_hint">Search products…</string>
+    <string name="home_total_products">Total %d products</string>
+    <string name="home_total_products_format">(Total %d items)</string>
+    <string name="home_no_products">No products found</string>
+    <string name="home_error_message">An error occurred</string>
+    
+    <!-- Filter Screen -->
+    <string name="filter_title">Filter Categories</string>
+    <string name="filter_clear">Clear</string>
+    <string name="filter_apply">Apply</string>
+    <string name="filter_all_categories">All Categories</string>
+    
+    <!-- Sort Screen -->
+    <string name="sort_title">Choose Sorting</string>
+    <string name="sort_default">Default (No sorting)</string>
+    <string name="sort_price_low_to_high">Price (Low to High)</string>
+    <string name="sort_price_high_to_low">Price (High to Low)</string>
+    <string name="sort_rating_asc">Rating ↑</string>
+    <string name="sort_rating_desc">Rating ↓</string>
+    <string name="sort_discount_desc">Discount ↓</string>
+    <string name="sort_stock_asc">Stock ↑</string>
+    <string name="sort_stock_desc">Stock ↓</string>
+    <string name="sort_name_a_to_z">Name A→Z</string>
+    <string name="sort_name_z_to_a">Name Z→A</string>
+    <string name="sort_rating">Rating</string>
+    
+    <!-- Product Detail -->
+    <string name="product_detail_title">Product Detail</string>
+    <string name="product_detail_add_to_cart">Add to Cart</string>
+    <string name="product_detail_added_to_cart">Successfully Added to Cart!</string>
+    <string name="product_detail_add_to_favorites">Add to Favorites</string>
+    <string name="product_detail_remove_from_favorites">Remove from Favorites</string>
+    <string name="product_detail_discount">%%%d</string>
+    <string name="product_detail_price_format">$%.2f</string>
+    <string name="product_detail_original_price_format">$%.2f</string>
+    <string name="product_detail_description">Description</string>
+    <string name="product_detail_reviews">Reviews</string>
+    <string name="product_detail_rating">Rating</string>
+    
+    <!-- Cart Screen -->
+    <string name="cart_title">CART</string>
+    <string name="cart_price_label">Price:</string>
+    <string name="cart_discount_label">Discount:</string>
+    <string name="cart_total_label">Total:</string>
+    <string name="cart_empty">Your cart is empty</string>
+    <string name="cart_total">Total: $%.2f</string>
+    <string name="cart_checkout">Checkout</string>
+    <string name="cart_remove_item">Remove Item</string>
+    <string name="cart_quantity">Quantity: %d</string>
+    <string name="cart_price_format">$%.2f</string>
+    <string name="cart_discount_price_format">$%.2f</string>
+    
+    <!-- Favorite Screen -->
+    <string name="favorite_title">FAVORITES</string>
+    <string name="favorite_empty">You have no favorite products</string>
+    <string name="favorite_price_format">$%.2f</string>
+    <string name="favorite_remove">Remove from Favorites</string>
+    
+    <!-- Checkout Screen -->
+    <string name="checkout_title">CHECKOUT</string>
+    <string name="checkout_name">Full Name</string>
+    <string name="checkout_email">Email</string>
+    <string name="checkout_phone">Phone</string>
+    <string name="checkout_phone_required">Phone number is required</string>
+    <string name="checkout_name_required">Full name is required</string>
+    <string name="checkout_email_required">Email is required</string>
+    <string name="checkout_email_invalid">Invalid email format</string>
+    <string name="checkout_phone_invalid">Invalid phone format</string>
+    <string name="checkout_total_amount">Total Amount: $%.2f</string>
+    <string name="checkout_confirm_order">Confirm Order</string>
+    <string name="checkout_confirm_order_button">CONFIRM ORDER</string>
+    <string name="checkout_success">Your order has been successfully created!</string>
+    <string name="checkout_error">An error occurred while creating your order</string>
+    
+    <!-- Order Success Screen -->
+    <string name="order_success_title">Order Received!</string>
+    <string name="order_success_message">Your order has been successfully created. Order number: #%s</string>
+    <string name="order_success_thank_you">Thank you!</string>
+    <string name="order_success_continue_shopping">Continue Shopping</string>
+    <string name="order_success_go_home">Go to Home</string>
+    <string name="order_success_order_details">Order Details</string>
+    <string name="order_success_estimated_delivery">Estimated Delivery: 3–5 business days</string>
+    <string name="order_success_tracking_info">Check your email address to track your order.</string>
+    
+    <!-- Common -->
+    <string name="common_loading">Loading…</string>
+    <string name="splash_subtitle">Shopping Experience</string>
+    
+    <!-- Error Messages -->
+    <string name="error_empty_response">Empty response from server</string>
+    <string name="error_loading_products">An error occurred while loading products</string>
+    <string name="error_icon">Error icon</string>
+    <string name="retry">Retry</string>
+    <string name="error_client">Client error</string>
+    <string name="error_server">Server error</string>
+    <string name="error_unexpected_http">Unexpected HTTP code: %d</string>
+    <string name="error_unknown_brand">Unknown Brand</string>
+    <string name="common_error">com.example.enuyguncase.ui.theme.Error</string>
+    <string name="common_success">Success</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_ok">OK</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_back">Back</string>
+    <string name="common_next">Next</string>
+    <string name="common_previous">Previous</string>
+    
+
+    
+    <!-- Currency -->
+    <string name="currency_format">$%.2f</string>
+    <string name="currency_symbol">$</string>
+    
+
+</resources> 

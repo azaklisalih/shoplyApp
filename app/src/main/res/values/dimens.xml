@@ -1,0 +1,7 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_size">64dp</dimen>
+    <dimen name="fab_vertical_offset">24dp</dimen>
+    <dimen name="fab_radius">24dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+</resources>
