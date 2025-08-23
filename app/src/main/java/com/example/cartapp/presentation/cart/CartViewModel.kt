@@ -2,10 +2,13 @@ package com.example.cartapp.presentation.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cartapp.R
 import com.example.cartapp.domain.model.CartItem
+import com.example.cartapp.domain.repository.ProductRepository
 import com.example.cartapp.domain.usecase.cart.GetCartItemsUseCase
 import com.example.cartapp.domain.usecase.cart.RemoveFromCartUseCase
 import com.example.cartapp.domain.usecase.cart.UpdateCartItemQuantityUseCase
+import com.example.cartapp.domain.usecase.cart.ClearCartUseCase
 import com.example.cartapp.presentation.ui_state.CartUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +22,8 @@ import javax.inject.Inject
 class CartViewModel @Inject constructor(
     private val getCartItems: GetCartItemsUseCase,
     private val updateCartItemQuantity: UpdateCartItemQuantityUseCase,
-    private val removeFromCart: RemoveFromCartUseCase
+    private val removeFromCart: RemoveFromCartUseCase,
+    private val clearCart: ClearCartUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(CartUIState())
@@ -48,7 +52,7 @@ class CartViewModel @Inject constructor(
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Unknown error"
+                        error = e.message ?: R.string.error_unknown.toString()
                     )
                 }
             }
@@ -63,9 +67,8 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 updateCartItemQuantity(productId, newQuantity)
-                // Cart items will be updated automatically through Flow
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to update quantity") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_update_quantity.toString()) }
             }
         }
     }
@@ -74,9 +77,8 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 removeFromCart(productId)
-                // Cart items will be updated automatically through Flow
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to remove from cart") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_cart.toString()) }
             }
         }
     }
@@ -84,14 +86,9 @@ class CartViewModel @Inject constructor(
     fun clearCart() {
         viewModelScope.launch {
             try {
-                // We need to add clearCart method to repository
-                // For now, remove items one by one
-                val cartItems = _uiState.value.cartItems
-                cartItems.forEach { item ->
-                    removeFromCart(item.productId)
-                }
+                clearCart()
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: "Failed to clear cart") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_clear_cart.toString()) }
             }
         }
     }

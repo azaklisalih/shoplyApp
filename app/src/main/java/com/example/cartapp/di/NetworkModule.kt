@@ -22,7 +22,6 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor().apply {
-            // Prod’da BODY yerine BASIC ya da NONE tercih edin
             level = HttpLoggingInterceptor.Level.BODY
         }
 

@@ -1,10 +1,9 @@
 package com.example.cartapp.data.repository
 
+import android.content.Context
+import com.example.cartapp.R
 import com.example.cartapp.data.cart.local.dao.CartDao
 import com.example.cartapp.data.favorite.local.dao.FavoriteDao
-import com.example.cartapp.data.cart.local.entities.CartItemEntity
-import com.example.cartapp.data.favorite.local.entities.FavoriteEntity
-import com.example.cartapp.data.cart.mapper.toDomain
 import com.example.cartapp.data.cart.mapper.toDomainList
 import com.example.cartapp.data.cart.mapper.toEntity
 import com.example.cartapp.data.favorite.mapper.toEntity
@@ -28,7 +27,8 @@ import javax.inject.Singleton
 class ProductRepositoryImpl @Inject constructor(
     private val api: ProductApi,
     private val cartDao: CartDao,
-    private val favoriteDao: FavoriteDao
+    private val favoriteDao: FavoriteDao,
+    private val context: Context
 ) : ProductRepository {
 
     override fun getProductsFlow(
@@ -39,7 +39,6 @@ class ProductRepositoryImpl @Inject constructor(
         brand: String?,
         model: String?
     ): Flow<List<Product>> = flow {
-        // Calculate page from skip
         val page = if (skip != null && limit != null && limit > 0) {
             (skip / limit) + 1
         } else {
@@ -57,17 +56,17 @@ class ProductRepositoryImpl @Inject constructor(
         when (response.code()) {
             in 200..299 -> {
                 val body = response.body()
-                    ?: throw Exception("Empty response")
+                    ?: throw Exception(context.getString(R.string.error_empty_response))
                 emit(body.toDomainList())
             }
             in 400..499 -> {
-                throw Exception("Client error: ${response.message()}")
+                throw Exception("${context.getString(R.string.error_client)}: ${response.message()}")
             }
             in 500..599 -> {
-                throw Exception("Server error: ${response.message()}")
+                throw Exception("${context.getString(R.string.error_server)}: ${response.message()}")
             }
             else -> {
-                throw Exception("Unexpected HTTP: ${response.code()}")
+                throw Exception("${context.getString(R.string.error_unexpected_http)}: ${response.code()}")
             }
         }
     }.flowOn(Dispatchers.IO)
@@ -76,12 +75,12 @@ class ProductRepositoryImpl @Inject constructor(
         val response = api.getProductById(id)
         when (response.code()) {
             in 200..299 -> {
-                val body = response.body() ?: throw Exception("Empty response")
+                val body = response.body() ?: throw Exception(context.getString(R.string.error_empty_response))
                 emit(body.toDomain())
             }
-            in 400..499 -> throw Exception("Client error: ${response.message()}")
-            in 500..599 -> throw Exception("Server error: ${response.message()}")
-            else -> throw Exception("Unexpected HTTP: ${response.code()}")
+            in 400..499 -> throw Exception("${context.getString(R.string.error_client)}: ${response.message()}")
+            in 500..599 -> throw Exception("${context.getString(R.string.error_server)}: ${response.message()}")
+            else -> throw Exception("${context.getString(R.string.error_unexpected_http)}: ${response.code()}")
         }
     }.flowOn(Dispatchers.IO)
 
@@ -89,28 +88,36 @@ class ProductRepositoryImpl @Inject constructor(
         val response = api.searchProducts(query)
         when (response.code()) {
             in 200..299 -> {
-                val body = response.body() ?: throw Exception("Empty response")
+                val body = response.body() ?: throw Exception(context.getString(R.string.error_empty_response))
                 emit(body.toDomainList())
             }
-            in 400..499 -> throw Exception("Client error: ${response.message()}")
-            in 500..599 -> throw Exception("Server error: ${response.message()}")
-            else -> throw Exception("Unexpected HTTP: ${response.code()}")
+            in 400..499 -> throw Exception("${context.getString(R.string.error_client)}: ${response.message()}")
+            in 500..599 -> throw Exception("${context.getString(R.string.error_server)}: ${response.message()}")
+            else -> throw Exception("${context.getString(R.string.error_unexpected_http)}: ${response.code()}")
         }
     }.flowOn(Dispatchers.IO)
 
-    // Cart Operations
     override suspend fun addToCart(product: Product, quantity: Int) {
-        val cartItem = CartItem(
-            productId = product.id,
-            name = product.name,
-            price = product.price,
-            image = product.image,
-            description = product.description,
-            model = product.model,
-            brand = product.brand,
-            quantity = quantity
-        ).toEntity()
-        cartDao.upsert(cartItem)
+        // Check if item already exists in cart
+        val existingItem = cartDao.getItemByProductId(product.id)
+        
+        if (existingItem != null) {
+            // Item exists, increase quantity
+            cartDao.increaseQuantity(product.id)
+        } else {
+            // Item doesn't exist, add new item
+            val cartItem = CartItem(
+                productId = product.id,
+                name = product.name,
+                price = product.price,
+                image = product.image,
+                description = product.description,
+                model = product.model,
+                brand = product.brand,
+                quantity = quantity
+            ).toEntity()
+            cartDao.upsert(cartItem)
+        }
     }
 
     override suspend fun removeFromCart(productId: String) {
@@ -128,7 +135,6 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
-    // Favorite Operations
     override suspend fun addToFavorites(product: Product) {
         val favoriteEntity = Favorite(
             productId = product.id,
@@ -159,5 +165,9 @@ class ProductRepositoryImpl @Inject constructor(
         favoriteDao.getAll().map { favorites ->
             favorites.map { it.productId }.toSet()
         }.flowOn(Dispatchers.IO)
+
+    override suspend fun clearCart() {
+        cartDao.clearCart()
+    }
 
 }

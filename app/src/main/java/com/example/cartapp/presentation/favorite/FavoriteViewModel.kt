@@ -2,9 +2,11 @@ package com.example.cartapp.presentation.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cartapp.R
 import com.example.cartapp.domain.model.Favorite
 import com.example.cartapp.domain.usecase.favorite.GetFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
+import com.example.cartapp.domain.usecase.favorite.ConvertFavoriteToProductUseCase
 import com.example.cartapp.domain.usecase.cart.AddToCartUseCase
 import com.example.cartapp.presentation.ui_state.FavoriteUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +23,7 @@ import javax.inject.Inject
 class FavoriteViewModel @Inject constructor(
     private val getFavoritesUseCase: GetFavoritesUseCase,
     private val removeFromFavoritesUseCase: RemoveFromFavoritesUseCase,
+    private val convertFavoriteToProduct: ConvertFavoriteToProductUseCase,
     private val addToCartUseCase: AddToCartUseCase
 ) : ViewModel() {
     
@@ -36,10 +39,8 @@ class FavoriteViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
-                // Get favorites once
                 val favorites = getFavoritesUseCase().first()
-                println("📋 Loaded ${favorites.size} favorites")
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         isLoading = false,
                         favorites = favorites,
@@ -47,11 +48,10 @@ class FavoriteViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                println("❌ Error loading favorites: ${e.message}")
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Unknown error"
+                        error = e.message ?: R.string.error_unknown.toString()
                     )
                 }
             }
@@ -61,11 +61,8 @@ class FavoriteViewModel @Inject constructor(
     fun removeFromFavorites(productId: String) {
         viewModelScope.launch {
             try {
-                println("🔄 Removing from favorites: $productId")
                 removeFromFavoritesUseCase(productId)
-                println("✅ Successfully removed from favorites: $productId")
-                
-                // Reload favorites list after removal
+
                 val updatedFavorites = getFavoritesUseCase().first()
                 _uiState.update { 
                     it.copy(
@@ -73,29 +70,25 @@ class FavoriteViewModel @Inject constructor(
                         error = null
                     )
                 }
-                println("📋 Updated favorites list: ${updatedFavorites.size} items")
             } catch (e: Exception) {
-                println("❌ Error removing from favorites: ${e.message}")
-                _uiState.update { it.copy(error = e.message ?: "Failed to remove from favorites") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_favorites.toString()) }
             }
         }
     }
     
-    fun addToCart(product: com.example.cartapp.domain.model.Product) {
+    fun addToCart(favorite: com.example.cartapp.domain.model.Favorite) {
         viewModelScope.launch {
             try {
+                val product = convertFavoriteToProduct(favorite)
                 addToCartUseCase(product, 1)
-                println("✅ Added to cart from favorites: ${product.name}")
+
+                _uiState.update { it.copy(animatedCartProductId = favorite.productId) }
                 
-                // Show animation
-                _uiState.update { it.copy(animatedCartProductId = product.id) }
-                
-                // Hide animation after delay
                 delay(2000)
                 _uiState.update { it.copy(animatedCartProductId = null) }
                 
             } catch (e: Exception) {
-                println("❌ Error adding to cart from favorites: ${e.message}")
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
             }
         }
     }

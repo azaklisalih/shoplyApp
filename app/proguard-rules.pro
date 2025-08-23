@@ -12,7 +12,7 @@
 -renamesourcefileattribute SourceFile
 
 # Keep all classes in the main package
--keep class com.example.enuyguncase.** { *; }
+-keep class com.example.cartapp.** { *; }
 
 # Retrofit
 -keepattributes Signature
@@ -104,23 +104,23 @@
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
 
 # Keep model classes
--keep class com.example.enuyguncase.domain.model.** { *; }
--keep class com.example.enuyguncase.data.**.dto.** { *; }
--keep class com.example.enuyguncase.data.**.entities.** { *; }
+-keep class com.example.cartapp.domain.model.** { *; }
+-keep class com.example.cartapp.data.**.dto.** { *; }
+-keep class com.example.cartapp.data.**.entities.** { *; }
 
 # Keep ViewModels
--keep class com.example.enuyguncase.presentation.**.viewmodel.** { *; }
+-keep class com.example.cartapp.presentation.**.viewmodel.** { *; }
 
 # Keep UI State classes
--keep class com.example.enuyguncase.presentation.**.ui.** { *; }
+-keep class com.example.cartapp.presentation.**.ui.** { *; }
 
 # Keep Fragments and Activities
--keep class com.example.enuyguncase.presentation.**.fragment.** { *; }
--keep class com.example.enuyguncase.MainActivity { *; }
--keep class com.example.enuyguncase.SplashActivity { *; }
+-keep class com.example.cartapp.presentation.**.fragment.** { *; }
+-keep class com.example.cartapp.MainActivity { *; }
+-keep class com.example.cartapp.SplashActivity { *; }
 
 # Keep Application class
--keep class com.example.enuyguncase.EnuygunCaseApp { *; }
+-keep class com.example.cartapp.CartApp { *; }
 
 # Data Binding
 -keep class androidx.databinding.** { *; }
@@ -135,11 +135,11 @@
 }
 
 # Keep generated binding classes
--keep class com.example.enuyguncase.databinding.** { *; }
+-keep class com.example.cartapp.databinding.** { *; }
 
 # Keep all R classes (includes all resource types)
--keep class com.example.enuyguncase.R { *; }
--keep class com.example.enuyguncase.R$* { *; }
+-keep class com.example.cartapp.R { *; }
+-keep class com.example.cartapp.R$* { *; }
 
 # Suppress warnings for missing classes
 -dontwarn io.ktor.client.engine.mock.MockEngine$Companion
@@ -153,3 +153,69 @@
 -dontwarn kotlin.**
 -dontwarn kotlinx.**
 -dontwarn org.intellij.lang.annotations.**
+
+# Keep LocaleHelper for language switching
+-keep class com.example.cartapp.util.LocaleHelper { *; }
+
+# Keep Navigation Component safe args
+-keep class com.example.cartapp.presentation.**.*FragmentDirections { *; }
+-keep class com.example.cartapp.presentation.**.*FragmentArgs { *; }
+
+# Keep Hilt generated classes
+-keep class dagger.hilt.android.internal.managers.** { *; }
+-keep class dagger.hilt.android.internal.modules.** { *; }
+
+# Keep Parcelable implementations
+-keepclassmembers class * implements android.os.Parcelable {
+    static ** CREATOR;
+}
+
+# Keep Serializable implementations
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
+
+# Keep enum values
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# Keep JavaScript interface methods
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+# Keep custom views
+-keep public class * extends android.view.View {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+    public void set*(...);
+    public *** get*();
+}
+
+# Keep custom drawables
+-keep public class * extends android.graphics.drawable.Drawable {
+    public <init>(...);
+}
+
+# Keep custom animations
+-keep public class * extends android.view.animation.Animation {
+    public <init>(...);
+}
+
+# Keep custom interpolators
+-keep public class * implements android.view.animation.Interpolator {
+    public <init>(...);
+}

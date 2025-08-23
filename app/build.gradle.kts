@@ -29,10 +29,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // APK boyutunu daha da küçültmek için
             isDebuggable = false
             isJniDebuggable = false
             isPseudoLocalesEnabled = false
+            
+            proguardFile("proguard-rules.pro")
         }
         debug {
             isMinifyEnabled = false
@@ -76,7 +77,6 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.androidx.arch.core.testing)
     
-    // Android Testing
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.test.core)

@@ -1,15 +1,15 @@
 package com.example.cartapp.presentation.home
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cartapp.R
 import com.example.cartapp.domain.model.Product
-import com.example.cartapp.domain.repository.ProductRepository
 import com.example.cartapp.domain.usecase.home.GetProductsUseCase
 import com.example.cartapp.domain.usecase.home.SearchProductsUseCase
 import com.example.cartapp.domain.usecase.cart.AddToCartUseCase
 import com.example.cartapp.domain.usecase.favorite.AddToFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
+import com.example.cartapp.domain.usecase.favorite.ObserveFavoriteIdsUseCase
 import com.example.cartapp.presentation.ui_state.HomeUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -32,13 +32,14 @@ class HomeViewModel @Inject constructor(
     private val addToCart: AddToCartUseCase,
     private val addToFavorites: AddToFavoritesUseCase,
     private val removeFromFavorites: RemoveFromFavoritesUseCase,
-    private val productRepository: ProductRepository
+    private val observeFavoriteIds: ObserveFavoriteIdsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState(isLoading = true))
     val uiState: StateFlow<HomeUIState> = _uiState.asStateFlow()
 
-    val searchQuery = MutableLiveData("")
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     init {
         fetchProducts()
@@ -66,7 +67,7 @@ class HomeViewModel @Inject constructor(
                 )
                     .map { products -> applyLocalFilters(products, currentState) }
                     .combine(
-                        productRepository.observeFavoriteIds().distinctUntilChanged()
+                        observeFavoriteIds().distinctUntilChanged()
                     ) { products, favIds ->
                         val favMap = products.associate { p -> p.id to favIds.contains(p.id) }
                         products to favMap
@@ -104,10 +105,10 @@ class HomeViewModel @Inject constructor(
             try {
                 _uiState.update { it.copy(isLoading = true, error = null, page = 0) }
 
-                searchProducts.invoke(query)
+                searchProducts.invoke(query                )
                     .map { products -> applyLocalFilters(products, _uiState.value) }
                     .combine(
-                        productRepository.observeFavoriteIds().distinctUntilChanged()
+                        observeFavoriteIds().distinctUntilChanged()
                     ) { products, favIds ->
                         val favMap = products.associate { p -> p.id to favIds.contains(p.id) }
                         products to favMap
@@ -173,7 +174,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun refreshHome() {
-        searchQuery.postValue("")
+        _searchQuery.value = ""
         clearFilters()
     }
 
@@ -184,39 +185,33 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 addToCart.invoke(product, 1)
-                
-                // Show animation
+
                 _uiState.update { it.copy(animatedCartProductId = product.id) }
-                
-                // Hide animation after delay
+
                 delay(2000)
                 _uiState.update { it.copy(animatedCartProductId = null) }
-                
+
             } catch (exception: Exception) {
-                // Handle error
                 _uiState.update { it.copy(error = exception.message) }
             }
         }
     }
 
-        fun toggleFavorite(product: Product) {
+    fun toggleFavorite(product: Product) {
         viewModelScope.launch {
             try {
                 val isCurrentlyFavorite = _uiState.value.favoriteStates[product.id] ?: false
-                
+
                 if (isCurrentlyFavorite) {
                     removeFromFavorites.invoke(product.id)
                 } else {
                     addToFavorites.invoke(product)
-                    
-                    // Show animation for adding to favorites
+
                     _uiState.update { it.copy(animatedFavoriteProductId = product.id) }
-                    
-                    // Hide animation after delay
+
                     delay(2000)
                     _uiState.update { it.copy(animatedFavoriteProductId = null) }
                 }
-                // Favorite state will be automatically updated by the combine operator
             } catch (exception: Exception) {
                 _uiState.update { it.copy(error = exception.message) }
             }
@@ -259,7 +254,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isFilterDataLoading = false,
-                        filterError = e.message ?: "Failed to load filter data"
+                        filterError = e.message ?: R.string.error_failed_load_filter_data.toString()
                     )
                 }
             }
@@ -269,15 +264,12 @@ class HomeViewModel @Inject constructor(
     fun toggleBrand(brand: String) {
         val currentBrands = _uiState.value.selectedBrands.toMutableSet()
         if (currentBrands.contains(brand)) {
-            // Remove the brand
             currentBrands.remove(brand)
         } else {
-            // Clear other brands and add only this one (single selection)
             currentBrands.clear()
             currentBrands.add(brand)
         }
 
-        // Clear model selection when brand changes
         _uiState.update {
             it.copy(
                 selectedBrands = currentBrands,
@@ -382,7 +374,7 @@ class HomeViewModel @Inject constructor(
                 )
                     .map { newProducts -> applyLocalFilters(newProducts, currentState) }
                     .combine(
-                        productRepository.observeFavoriteIds().distinctUntilChanged()
+                        observeFavoriteIds().distinctUntilChanged()
                     ) { newProducts, favIds ->
                         val favMap = newProducts.associate { p -> p.id to favIds.contains(p.id) }
                         newProducts to favMap

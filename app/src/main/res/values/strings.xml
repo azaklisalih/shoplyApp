@@ -1,13 +1,11 @@
 <resources>
     <string name="app_name">Shoply</string>
     
-    <!-- Navigation -->
     <string name="nav_home">Ana Sayfa</string>
     <string name="nav_favorites">Favoriler</string>
     <string name="nav_cart">Sepet</string>
     <string name="nav_profile">Profil</string>
     
-    <!-- Home Screen -->
     <string name="home_products">Ürünler</string>
     <string name="home_clear_filters">Filtreleri Temizle</string>
     <string name="home_filter">Filtre</string>
@@ -17,14 +15,16 @@
     <string name="home_total_products_format">(Toplam %d adet)</string>
     <string name="home_no_products">Ürün bulunamadı</string>
     <string name="home_error_message">Bir hata oluştu</string>
+    <string name="home_search_hint_placeholder">Ürün ara…</string>
+    <string name="home_filters_label">Filtreler:</string>
+    <string name="home_select_filter_button">FİLTRE SEÇ</string>
+    <string name="home_retry_button">Tekrar Dene</string>
     
-    <!-- Filter Screen -->
     <string name="filter_title">Kategori Filtrele</string>
     <string name="filter_clear">Temizle</string>
     <string name="filter_apply">Uygula</string>
     <string name="filter_all_categories">Tüm Kategoriler</string>
     
-    <!-- Sort Screen -->
     <string name="sort_title">Sıralama Seç</string>
     <string name="sort_default">Varsayılan (Sıralama yok)</string>
     <string name="sort_price_low_to_high">Fiyat (Düşükten Yükseğe)</string>
@@ -38,7 +38,6 @@
     <string name="sort_name_z_to_a">Ada göre Z→A</string>
     <string name="sort_rating">Değerlendirme</string>
     
-    <!-- Product Detail -->
     <string name="product_detail_title">Ürün Detayı</string>
     <string name="product_detail_add_to_cart">Sepete Ekle</string>
     <string name="product_detail_add_to_favorites">Favorilere Ekle</string>
@@ -51,7 +50,6 @@
     <string name="product_detail_reviews">Yorumlar</string>
     <string name="product_detail_rating">Değerlendirme</string>
     
-    <!-- Cart Screen -->
     <string name="cart_title">SEPET</string>
     <string name="cart_price_label">Fiyat:</string>
     <string name="cart_discount_label">İndirim:</string>
@@ -60,17 +58,17 @@
     <string name="cart_total">Toplam: %.2f₺</string>
     <string name="cart_checkout">Ödemeye Geç</string>
     <string name="cart_remove_item">Ürünü Kaldır</string>
+    <string name="cart_clear_all">Tümünü Sil</string>
+    <string name="cart_clear_all_confirmation">Sepetteki tüm ürünleri silmek istediğinizden emin misiniz?</string>
     <string name="cart_quantity">Adet: %d</string>
     <string name="cart_price_format">%.2f₺</string>
     <string name="cart_discount_price_format">%.2f₺</string>
     
-    <!-- Favorite Screen -->
     <string name="favorite_title">FAVORİLER</string>
     <string name="favorite_empty">Favori ürününüz yok</string>
     <string name="favorite_price_format">%.2f₺</string>
     <string name="favorite_remove">Favorilerden Çıkar</string>
     
-    <!-- Checkout Screen -->
     <string name="checkout_title">ÖDEME</string>
     <string name="checkout_name">Ad Soyad</string>
     <string name="checkout_email">E-posta</string>
@@ -86,7 +84,6 @@
     <string name="checkout_success">Siparişiniz başarıyla oluşturuldu!</string>
     <string name="checkout_error">Sipariş oluşturulurken bir hata oluştu</string>
     
-    <!-- Order Success Screen -->
     <string name="order_success_title">Siparişiniz Alındı!</string>
     <string name="order_success_message">Siparişiniz başarıyla oluşturuldu. Sipariş numaranız: #%s</string>
     <string name="order_success_thank_you">Teşekkür ederiz!</string>
@@ -96,10 +93,55 @@
     <string name="order_success_estimated_delivery">Tahmini Teslimat: 3–5 iş günü</string>
     <string name="order_success_tracking_info">Siparişinizi takip etmek için e-posta adresinizi kontrol edin.</string>
     
-    <!-- Common -->
     <string name="common_loading">Yükleniyor…</string>
+    <string name="common_add_to_cart">Sepete Ekle</string>
+    <string name="common_added_to_cart">Eklendi! ✓</string>
+    <string name="common_price">Fiyat:</string>
+    <string name="common_remove">Kaldır</string>
+    <string name="common_quantity">Adet</string>
+    <string name="common_brand">Marka</string>
+    <string name="common_model">Model</string>
+    <string name="common_sort_by">Sırala</string>
+    
+    <string name="profile_title">PROFİL</string>
+    <string name="profile_orders">Siparişlerim</string>
+    <string name="profile_orders_description">Geçmiş siparişlerinizi görüntüleyin</string>
+    <string name="profile_settings">Ayarlar</string>
+    <string name="profile_settings_description">Uygulama ayarlarını yönetin</string>
+    
+    <string name="settings_title">AYARLAR</string>
+    <string name="settings_language">Dil</string>
+    <string name="settings_language_turkish">Türkçe</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_info_title">Bilgi</string>
+    <string name="settings_info_description">Dil değişikliği uygulamanın yeniden başlatılmasını gerektirir. Değişiklikler bir sonraki açılışta etkili olacaktır.</string>
+    <string name="settings_language_changed_success">Dil değiştirildi. Uygulama yeniden başlatılıyor...</string>
     
     <!-- Error Messages -->
+    <string name="error_unknown">Bilinmeyen hata</string>
+    <string name="error_failed_update_quantity">Miktar güncellenemedi</string>
+    <string name="error_failed_remove_cart">Sepetten kaldırılamadı</string>
+    <string name="error_failed_clear_cart">Sepet temizlenemedi</string>
+    <string name="error_failed_place_order">Sipariş verilemedi</string>
+    <string name="error_failed_remove_favorites">Favorilerden kaldırılamadı</string>
+    <string name="error_failed_add_cart">Sepete eklenemedi</string>
+    <string name="error_failed_toggle_favorite">Favori durumu değiştirilemedi</string>
+    <string name="error_failed_load_filter_data">Filtre verileri yüklenemedi</string>
+    
+    <string name="common_filter">Filtrele</string>
+    <string name="common_clear">Temizle</string>
+    <string name="common_apply">Uygula</string>
+    <string name="common_search">Ara</string>
+    <string name="common_search_hint">Arama yapın...</string>
+    <string name="common_no_results">Sonuç bulunamadı</string>
+    <string name="common_loading_more">Daha fazla yükleniyor...</string>
+    <string name="common_error_occurred">Bir hata oluştu</string>
+    <string name="common_try_again">Tekrar deneyin</string>
+    <string name="common_empty">Boş</string>
+    <string name="common_empty_cart">Sepetiniz boş</string>
+    <string name="common_empty_favorites">Favori ürününüz yok</string>
+    <string name="common_empty_products">Ürün bulunamadı</string>
+    
     <string name="error_empty_response">Sunucudan boş yanıt geldi</string>
     <string name="error_loading_products">Ürünler yüklenirken bir hata oluştu</string>
     <string name="error_icon">Hata ikonu</string>
@@ -120,11 +162,9 @@
     <string name="common_next">İleri</string>
     <string name="common_previous">Önceki</string>
     
-
-    
-    <!-- Currency -->
     <string name="currency_format">%.2f₺</string>
     <string name="currency_symbol">₺</string>
     
 
+    
 </resources>

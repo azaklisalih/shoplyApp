@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.viewModels
@@ -13,10 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.cartapp.databinding.FragmentProductDetailBinding
-import com.example.cartapp.presentation.ui_state.ProductDetailUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.cartapp.R
+import com.example.cartapp.domain.model.Product
 
 @AndroidEntryPoint
 class ProductDetailFragment : Fragment() {
@@ -46,29 +45,29 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = "Product Detail"
-        
+        binding.customAppBar.tvTitle.text = getString(R.string.product_detail_title)
+
         binding.customAppBar.btnBack.visibility = View.VISIBLE
         binding.customAppBar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        
+
         binding.customAppBar.btnRightAction.visibility = View.GONE
-        
+
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
 
     private fun setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            
+
             binding.root.setPadding(
                 binding.root.paddingLeft,
                 insets.top,
                 binding.root.paddingRight,
                 binding.root.paddingBottom
             )
-            
+
             WindowInsetsCompat.CONSUMED
         }
     }
@@ -99,7 +98,7 @@ class ProductDetailFragment : Fragment() {
                         uiState.product?.let { product ->
                             updateProductUI(product, binding)
                         }
-                        
+
                         updateFavoriteUI(uiState.isFavorite, binding)
                         updateCartUI(uiState.isInCart, binding)
                         updateAnimationUI(uiState.showSuccessAnimation, binding)
@@ -113,14 +112,17 @@ class ProductDetailFragment : Fragment() {
         viewModel.loadProduct(args.productId.toString())
     }
 
-    private fun updateProductUI(product: com.example.cartapp.domain.model.Product, binding: FragmentProductDetailBinding) {
+    private fun updateProductUI(
+        product: Product,
+        binding: FragmentProductDetailBinding
+    ) {
         binding.customAppBar.tvTitle.text = product.name
-        
+
         binding.tvProductName.text = product.name
         binding.tvProductDescription.text = product.description
-        
-        binding.tvPrice.text = "${product.price} ₺"
-        
+
+        binding.tvPrice.text = getString(R.string.currency_format, product.price.toDoubleOrNull() ?: 0.0)
+
         binding.productImageCard.visibility = View.VISIBLE
         binding.lyProductInfo.visibility = View.VISIBLE
         binding.lyPriceAndAddToCart.visibility = View.VISIBLE
@@ -133,45 +135,35 @@ class ProductDetailFragment : Fragment() {
             binding.ivFavorite.setImageResource(R.drawable.ic_star_outline)
         }
     }
-    
+
     private fun updateCartUI(isInCart: Boolean, binding: FragmentProductDetailBinding) {
-        // Always show "Add to Cart" button with same style
-        binding.btnAddToCart.text = "Add to Cart"
+        binding.btnAddToCart.text = getString(R.string.common_add_to_cart)
         binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
     }
-    
+
     private fun updateAnimationUI(showAnimation: Boolean, binding: FragmentProductDetailBinding) {
-        println("🎬 Animation state: $showAnimation")
-        
+
         if (showAnimation) {
-            println("🎬 Starting animation...")
-            
-            // Show success message with different color
-            binding.btnAddToCart.text = "Added! ✓"
+
+            binding.btnAddToCart.text = getString(R.string.common_added_to_cart)
             binding.btnAddToCart.setBackgroundColor(android.graphics.Color.GREEN)
             binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
-            
-            // Add scale animation
+
             binding.btnAddToCart.animate()
                 .scaleX(1.2f)
                 .scaleY(1.2f)
                 .setDuration(300)
                 .withEndAction {
-                    println("🎬 Scale up animation completed")
                     binding.btnAddToCart.animate()
                         .scaleX(1.0f)
                         .scaleY(1.0f)
                         .setDuration(300)
-                        .withEndAction {
-                            println("🎬 Scale down animation completed")
-                        }
+                        .withEndAction {}
                         .start()
                 }
                 .start()
         } else {
-            println("🎬 Resetting to normal state")
-            // Reset to normal state
-            binding.btnAddToCart.text = "Add to Cart"
+            binding.btnAddToCart.text = getString(R.string.common_add_to_cart)
             binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
             binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
         }

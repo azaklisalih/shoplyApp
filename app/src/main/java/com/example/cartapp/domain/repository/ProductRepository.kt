@@ -19,13 +19,12 @@ interface ProductRepository {
     fun getProductByIdFlow(id: String): Flow<Product>
     fun searchProductsFlow(query: String): Flow<List<Product>>
 
-    // Cart Operations
     suspend fun addToCart(product: Product, quantity: Int = 1)
     suspend fun removeFromCart(productId: String)
     fun getCartItems(): Flow<List<CartItem>>
     suspend fun updateCartItemQuantity(productId: String, quantity: Int)
+    suspend fun clearCart()
 
-    // Favorite Operations
     suspend fun addToFavorites(product: Product)
     suspend fun removeFromFavorites(productId: String)
     fun getFavorites(): Flow<List<Favorite>>

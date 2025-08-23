@@ -2,7 +2,7 @@ package com.example.cartapp.presentation.productdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.domain.repository.ProductRepository
+import com.example.cartapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,28 +36,23 @@ class ProductDetailViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
-                println("🔍 Loading product with ID: $productId")
-                
-                // Load product data
+
                 getProductById(productId)
                     .collect { product ->
-                        println("✅ Product loaded: ${product.name}")
-                        _uiState.update { 
+                        _uiState.update {
                             it.copy(
                                 isLoading = false,
                                 product = product
                             )
                         }
-                        // Check if product is in favorites and cart
                         checkFavoriteStatus(productId)
                         checkCartStatus(productId)
                     }
             } catch (e: Exception) {
-                println("❌ Error loading product: ${e.message}")
-                _uiState.update { 
+                _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Unknown error"
+                        error = e.message ?: R.string.error_unknown.toString()
                     )
                 }
             }
@@ -88,14 +83,9 @@ class ProductDetailViewModel @Inject constructor(
                 if (product != null) {
                     addToCart(product, 1)
                     _uiState.update { it.copy(isInCart = true) }
-                    println("✅ Added to cart: ${product.name}")
-                    
-                    // Show success message or snackbar
-                    // You can add a success callback here
                 }
             } catch (e: Exception) {
-                println("❌ Error adding to cart: ${e.message}")
-                _uiState.update { it.copy(error = e.message ?: "Failed to add to cart") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
             }
         }
     }
@@ -105,13 +95,10 @@ class ProductDetailViewModel @Inject constructor(
             try {
                 val product = _uiState.value.product
                 if (product != null) {
-                    // You can implement remove from cart logic here
                     _uiState.update { it.copy(isInCart = false) }
-                    println("❌ Removed from cart: ${product.name}")
                 }
             } catch (e: Exception) {
-                println("❌ Error removing from cart: ${e.message}")
-                _uiState.update { it.copy(error = e.message ?: "Failed to remove from cart") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_cart.toString()) }
             }
         }
     }
@@ -120,28 +107,18 @@ class ProductDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val product = _uiState.value.product
-                println("🎬 addToCartWithAnimation called, product: ${product?.name}, isInCart: ${_uiState.value.isInCart}")
-                
+
                 if (product != null) {
                     addToCart(product, 1)
                     _uiState.update { it.copy(isInCart = true) }
-                    println("✅ Added to cart: ${product.name}")
-                    
-                    // Show success animation
-                    println("🎬 Setting showSuccessAnimation = true")
+
                     _uiState.update { it.copy(showSuccessAnimation = true) }
                     
-                    // Hide animation after delay
-                    println("🎬 Waiting 2 seconds...")
                     delay(2000)
-                    println("🎬 Setting showSuccessAnimation = false")
                     _uiState.update { it.copy(showSuccessAnimation = false) }
-                } else {
-                    println("🎬 Product is null or already in cart")
                 }
             } catch (e: Exception) {
-                println("❌ Error adding to cart: ${e.message}")
-                _uiState.update { it.copy(error = e.message ?: "Failed to add to cart") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
             }
         }
     }
@@ -155,17 +132,14 @@ class ProductDetailViewModel @Inject constructor(
                 if (product != null) {
                     if (currentState) {
                         removeFromFavorites(product.id)
-                        println("❌ Removed from favorites: ${product.name}")
                     } else {
                         addToFavorites(product)
-                        println("⭐ Added to favorites: ${product.name}")
                     }
 
                     _uiState.update { it.copy(isFavorite = !currentState) }
                 }
             } catch (e: Exception) {
-                println("❌ Error toggling favorite: ${e.message}")
-                _uiState.update { it.copy(error = e.message ?: "Failed to toggle favorite") }
+                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_toggle_favorite.toString()) }
             }
         }
     }

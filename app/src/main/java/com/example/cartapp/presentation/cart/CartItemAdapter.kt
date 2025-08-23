@@ -33,7 +33,6 @@ class CartItemAdapter(
             binding.cartItem = cartItem
             binding.executePendingBindings()
 
-            // Set up quantity controls
             binding.btnMinus.setOnClickListener {
                 val newQuantity = cartItem.quantity - 1
                 onQuantityChanged(cartItem.productId, newQuantity)
@@ -44,12 +43,10 @@ class CartItemAdapter(
                 onQuantityChanged(cartItem.productId, newQuantity)
             }
 
-            // Set up item click for navigation
             binding.root.setOnClickListener {
                 onItemClick(cartItem.productId)
             }
 
-            // Set up remove button (long press to remove)
             binding.root.setOnLongClickListener {
                 onRemoveItem(cartItem.productId)
                 true

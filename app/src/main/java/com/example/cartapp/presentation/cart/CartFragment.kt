@@ -9,8 +9,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.cartapp.R
 import com.example.cartapp.databinding.FragmentCartBinding
 import com.example.cartapp.presentation.ui_state.CartUIState
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,9 +63,19 @@ class CartFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = "Cart"
+        binding.customAppBar.tvTitle.text = getString(R.string.cart_title)
         
         binding.customAppBar.btnBack.visibility = View.GONE
+        
+        binding.customAppBar.btnRightAction.apply {
+            setImageResource(R.drawable.ic_remove)
+            visibility = View.VISIBLE
+            setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+            
+            setOnClickListener {
+                showClearAllConfirmationDialog()
+            }
+        }
         
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
@@ -97,6 +110,17 @@ class CartFragment : Fragment() {
             )
         }
     }
+    
+    private fun showClearAllConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.cart_clear_all))
+            .setMessage(getString(R.string.cart_clear_all_confirmation))
+            .setPositiveButton(getString(R.string.common_yes)) { _, _ ->
+                viewModel.clearCart()
+            }
+            .setNegativeButton(getString(R.string.common_cancel), null)
+            .show()
+    }
 
     private fun setupObservers() {
         lifecycleScope.launch {
@@ -115,7 +139,7 @@ class CartFragment : Fragment() {
     }
 
     private fun updateCartUI(uiState: CartUIState, binding: FragmentCartBinding) {
-        binding.tvTotal.text = "${uiState.totalPrice} ₺"
+        binding.tvTotal.text = getString(R.string.currency_format, uiState.totalPrice)
         
         if (uiState.isLoading) {
             binding.rvCartItems.adapter = shimmerAdapter

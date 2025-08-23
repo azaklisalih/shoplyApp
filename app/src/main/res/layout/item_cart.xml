@@ -46,7 +46,7 @@
                     android:id="@+id/tvProductPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{cartItem.price + ` ₺`}"
+                    android:text="@{cartItem.price + ` ` + @string/currency_symbol}"
                     android:textColor="@color/price_blue"
                     android:textSize="14sp"/>
 

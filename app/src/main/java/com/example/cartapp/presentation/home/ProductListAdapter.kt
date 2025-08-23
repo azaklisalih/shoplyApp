@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.cartapp.R
 import com.example.cartapp.databinding.ItemProductBinding
 import com.example.cartapp.databinding.ItemProductShimmerBinding
 import com.example.cartapp.domain.model.Product
@@ -59,7 +60,6 @@ class ProductListAdapter(
                 holder.bind(product, isFavorite)
             }
             is ShimmerViewHolder -> {
-                // Shimmer effect is handled by the layout
             }
         }
     }
@@ -103,24 +103,20 @@ class ProductListAdapter(
             binding.product = product
             binding.root.setOnClickListener { onItemClick(product) }
             
-            // Add to Cart button click listener
-            binding.btnAddToCart.setOnClickListener { 
+            binding.btnAddToCart.setOnClickListener {
                 onAddToCart(product)
             }
             
-            // Favorite button click listener
             binding.ivFavorite.setOnClickListener {
                 onToggleFavorite(product)
             }
             
-            // Update favorite icon based on status
             if (isFavorite) {
-                binding.ivFavorite.setImageResource(com.example.cartapp.R.drawable.ic_star_filled)
+                binding.ivFavorite.setImageResource(R.drawable.ic_star_filled)
             } else {
-                binding.ivFavorite.setImageResource(com.example.cartapp.R.drawable.ic_star_outline)
+                binding.ivFavorite.setImageResource(R.drawable.ic_star_outline)
             }
             
-            // Handle animations
             updateCartButtonAnimation(product.id)
             updateFavoriteButtonAnimation(product.id)
             
@@ -129,12 +125,10 @@ class ProductListAdapter(
         
         private fun updateCartButtonAnimation(productId: String) {
             if (animatedCartProductId == productId) {
-                // Show success animation
-                binding.btnAddToCart.text = "Added! ✓"
+                binding.btnAddToCart.text = binding.root.context.getString(R.string.common_added_to_cart)
                 binding.btnAddToCart.setBackgroundColor(android.graphics.Color.GREEN)
                 binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
                 
-                // Add scale animation
                 binding.btnAddToCart.animate()
                     .scaleX(1.2f)
                     .scaleY(1.2f)
@@ -148,8 +142,7 @@ class ProductListAdapter(
                     }
                     .start()
             } else {
-                // Reset to normal state
-                binding.btnAddToCart.text = "Add to Cart"
+                binding.btnAddToCart.text = binding.root.context.getString(R.string.common_add_to_cart)
                 binding.btnAddToCart.setBackgroundResource(com.example.cartapp.R.drawable.add_to_cart_button)
                 binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
             }
@@ -157,7 +150,6 @@ class ProductListAdapter(
         
         private fun updateFavoriteButtonAnimation(productId: String) {
             if (animatedFavoriteProductId == productId) {
-                // Add scale animation to favorite button
                 binding.ivFavorite.animate()
                     .scaleX(1.3f)
                     .scaleY(1.3f)

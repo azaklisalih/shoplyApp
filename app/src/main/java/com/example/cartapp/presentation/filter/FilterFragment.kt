@@ -37,7 +37,6 @@ class FilterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupStatusBar()
         setupCustomAppBar()
         setupListeners()
         setupObservers()
@@ -61,18 +60,10 @@ class FilterFragment : Fragment() {
         }
     }
 
-    private fun setupStatusBar() {
-        requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.primary_blue)
-        
-        val windowInsetsController = WindowCompat.getInsetsController(
-            requireActivity().window, 
-            requireActivity().window.decorView
-        )
-        windowInsetsController.isAppearanceLightStatusBars = false
-    }
+
 
     private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = "Filter"
+        binding.customAppBar.tvTitle.text = getString(R.string.common_filter)
         
         binding.customAppBar.btnBack.visibility = View.VISIBLE
         binding.customAppBar.btnBack.setImageResource(R.drawable.ic_close)
@@ -112,12 +103,9 @@ class FilterFragment : Fragment() {
             homeViewModel.uiState.collect { uiState ->
                 _binding?.let { binding ->
                     if (uiState.isFilterDataLoading) {
-                        // Show loading state
                         binding.progressBar.visibility = View.VISIBLE
                     } else if (uiState.filterError != null) {
-                        // Show error state
                         binding.progressBar.visibility = View.GONE
-                        // TODO: Show error message
                     } else {
                         binding.progressBar.visibility = View.GONE
                         updateBrandsUI(uiState.filteredBrands, uiState.selectedBrands)

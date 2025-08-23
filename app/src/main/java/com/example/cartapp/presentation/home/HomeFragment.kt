@@ -20,13 +20,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.cartapp.R
 import com.example.cartapp.MainActivity
 import com.example.cartapp.databinding.FragmentHomeBinding
-import com.example.cartapp.presentation.ui_state.HomeUIState
+import com.example.cartapp.presentation.common.ReselectCallback
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), ReselectCallback {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by activityViewModels()
@@ -47,10 +47,16 @@ class HomeFragment : Fragment() {
         setListeners()
         setupWindowInsets()
         setupClickOutsideToHideKeyboard()
+        
+        (activity as? MainActivity)?.setReselectCallback(this)
+    }
+    
+    override fun onReselect() {
+        viewModel.refreshHome()
     }
 
     private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = "E-Market"
+        binding.customAppBar.tvTitle.text = getString(R.string.app_name)
         
         binding.customAppBar.btnBack.visibility = View.GONE
         
@@ -206,6 +212,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        (activity as? MainActivity)?.setReselectCallback(null)
         _binding = null
     }
 }

@@ -87,4 +87,18 @@
         android:id="@+id/filterFragment"
         android:name="com.example.cartapp.presentation.filter.FilterFragment"
         android:label="@string/filter_title" />
+        
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.cartapp.presentation.profile.ProfileFragment"
+        android:label="@string/profile_title" >
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.cartapp.presentation.settings.SettingsFragment"
+        android:label="@string/settings_title" />
 </navigation>

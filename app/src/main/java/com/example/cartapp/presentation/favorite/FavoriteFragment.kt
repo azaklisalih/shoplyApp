@@ -11,9 +11,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.cartapp.R
 import com.example.cartapp.databinding.FragmentFavoriteBinding
 import com.example.cartapp.presentation.ui_state.FavoriteUIState
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +47,7 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = "Favorites"
+        binding.customAppBar.tvTitle.text = getString(R.string.favorite_title)
         
         binding.customAppBar.btnBack.visibility = View.GONE
         
@@ -64,17 +64,7 @@ class FavoriteFragment : Fragment() {
                 )
             },
             onAddToCart = { favorite ->
-                val product = com.example.cartapp.domain.model.Product(
-                    id = favorite.productId,
-                    name = favorite.name,
-                    price = favorite.price,
-                    image = favorite.image,
-                    description = favorite.description,
-                    model = favorite.model,
-                    brand = favorite.brand,
-                    createdAt = favorite.createdAt
-                )
-                viewModel.addToCart(product)
+                viewModel.addToCart(favorite)
             },
             onRemoveFavorite = { productId ->
                 viewModel.removeFromFavorites(productId)
@@ -98,7 +88,6 @@ class FavoriteFragment : Fragment() {
                             binding.rvFavorites.visibility = View.VISIBLE
                         } else if (uiState.error != null) {
                             binding.rvFavorites.visibility = View.GONE
-                            println("❌ FavoriteFragment error: ${uiState.error}")
                         } else {
                             updateFavoritesList(uiState.favorites, uiState, binding)
                         }
@@ -117,10 +106,8 @@ class FavoriteFragment : Fragment() {
                 binding.rvFavorites.adapter = adapter
                 adapter.submitList(favorites)
                 adapter.updateAnimationState(uiState.animatedCartProductId)
-                println("✅ Updated favorites list with ${favorites.size} items")
             }
         } catch (e: Exception) {
-            println("❌ Error updating favorites list: ${e.message}")
             binding.rvFavorites.visibility = View.GONE
         }
     }

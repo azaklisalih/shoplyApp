@@ -13,7 +13,10 @@ import com.example.cartapp.domain.usecase.cart.IncreaseCartQuantityUseCaseTest
 import com.example.cartapp.domain.usecase.cart.DecreaseCartQuantityUseCaseTest
 import com.example.cartapp.domain.usecase.cart.RemoveCartItemUseCaseTest
 import com.example.cartapp.domain.usecase.cart.CheckoutUseCaseTest
+import com.example.cartapp.domain.usecase.cart.ClearCartUseCaseTest
 import com.example.cartapp.domain.usecase.favorite.GetAllFavoritesUseCaseTest
+import com.example.cartapp.domain.usecase.favorite.ObserveFavoriteIdsUseCaseTest
+import com.example.cartapp.domain.usecase.favorite.ConvertFavoriteToProductUseCaseTest
 import com.example.cartapp.domain.usecase.productdetail.AddFavoriteUseCaseTest
 import com.example.cartapp.domain.usecase.productdetail.CheckFavoriteUseCaseTest
 import com.example.cartapp.domain.usecase.productdetail.GetProductByIdUseCaseTest
@@ -23,6 +26,11 @@ import com.example.cartapp.data.home.repository.FavoriteRepositoryImplTest
 import com.example.cartapp.data.home.mapper.ProductMapperTest
 import com.example.cartapp.data.cart.CartMapperTest
 import com.example.cartapp.data.favorite.mapper.FavoriteMapperTest
+import com.example.cartapp.presentation.home.HomeViewModelTest
+import com.example.cartapp.presentation.cart.CartViewModelTest
+import com.example.cartapp.presentation.favorite.FavoriteViewModelTest
+import com.example.cartapp.presentation.common.StatusBarManagerTest
+import com.example.cartapp.presentation.common.CartBadgeManagerTest
 
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -49,7 +57,10 @@ import org.junit.runners.Suite
     DecreaseCartQuantityUseCaseTest::class,
     RemoveCartItemUseCaseTest::class,
     CheckoutUseCaseTest::class,
+    ClearCartUseCaseTest::class,
     GetAllFavoritesUseCaseTest::class,
+    ObserveFavoriteIdsUseCaseTest::class,
+    ConvertFavoriteToProductUseCaseTest::class,
     AddFavoriteUseCaseTest::class,
     CheckFavoriteUseCaseTest::class,
     GetProductByIdUseCaseTest::class,
@@ -64,6 +75,13 @@ import org.junit.runners.Suite
     CartMapperTest::class,
     FavoriteMapperTest::class,
     
-
+    // ViewModel Tests
+    HomeViewModelTest::class,
+    CartViewModelTest::class,
+    FavoriteViewModelTest::class,
+    
+    // Common Manager Tests
+    StatusBarManagerTest::class,
+    CartBadgeManagerTest::class
 )
 class TestSuite 

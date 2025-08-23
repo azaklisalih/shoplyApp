@@ -2,6 +2,7 @@ package com.example.cartapp.presentation.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cartapp.R
 import com.example.cartapp.domain.repository.ProductRepository
 import com.example.cartapp.presentation.ui_state.CheckoutUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,13 +21,28 @@ class CheckoutViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CheckoutUIState())
     val uiState: StateFlow<CheckoutUIState> = _uiState.asStateFlow()
     
+    init {
+        loadCartTotal()
+    }
+    
+    private fun loadCartTotal() {
+        viewModelScope.launch {
+            repository.getCartItems().collect { cartItems ->
+                val totalPrice = calculateTotalPrice(cartItems)
+                _uiState.update { it.copy(cartTotal = totalPrice) }
+            }
+        }
+    }
+    
+    private fun calculateTotalPrice(cartItems: List<com.example.cartapp.domain.model.CartItem>): Double {
+        return cartItems.sumOf { it.totalPrice }
+    }
+    
     fun placeOrder(name: String, email: String, phone: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
-                // TODO: Implement actual order placement logic
-                // For now, simulate order placement
                 kotlinx.coroutines.delay(2000)
                 
                 val orderNumber = generateOrderNumber()
@@ -38,14 +54,13 @@ class CheckoutViewModel @Inject constructor(
                     )
                 }
                 
-                // Clear cart after successful order
                 clearCart()
                 
             } catch (e: Exception) {
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Failed to place order"
+                        error = e.message ?: R.string.error_failed_place_order.toString()
                     )
                 }
             }
@@ -57,8 +72,6 @@ class CheckoutViewModel @Inject constructor(
     }
     
     private suspend fun clearCart() {
-        // TODO: Implement clear cart functionality
-        // For now, we'll remove items one by one
         repository.getCartItems().collect { cartItems ->
             cartItems.forEach { item ->
                 repository.removeFromCart(item.productId)

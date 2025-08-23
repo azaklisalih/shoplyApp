@@ -22,7 +22,6 @@ class FavoriteShimmerAdapter : RecyclerView.Adapter<FavoriteShimmerAdapter.Shimm
     }
 
     override fun onBindViewHolder(holder: ShimmerViewHolder, position: Int) {
-        // Shimmer effect is handled by the drawable
     }
 
     override fun getItemCount(): Int = shimmerCount

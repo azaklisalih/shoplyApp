@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.cartapp.R
 import com.example.cartapp.databinding.FragmentOrderSuccessBinding
 import com.example.cartapp.presentation.ui_state.OrderSuccessUIState
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,12 +33,33 @@ class OrderSuccessFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
         setupListeners()
+        setupObservers()
     }
 
     private fun setupUI() {
+        viewModel.setOrderNumber(args.orderNumber)
     }
 
     private fun setupListeners() {
+        binding.btnGoHome.setOnClickListener {
+            findNavController().navigate(
+                OrderSuccessFragmentDirections.actionOrderSuccessFragmentToHomeFragment()
+            ) {
+                popUpTo(R.id.homeFragment) { inclusive = true }
+            }
+        }
+        
+        binding.btnContinueShopping.setOnClickListener {
+            findNavController().navigate(
+                OrderSuccessFragmentDirections.actionOrderSuccessFragmentToHomeFragment()
+            ) {
+                popUpTo(R.id.homeFragment) { inclusive = true }
+            }
+        }
+    }
+    
+    private fun setupObservers() {
+        // Observe UI state if needed
     }
 
     override fun onDestroyView() {

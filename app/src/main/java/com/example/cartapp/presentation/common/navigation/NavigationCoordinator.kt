@@ -17,7 +17,6 @@ class NavigationCoordinator @Inject constructor() : NavigationRouter {
             ?.any { it.id == itemId } == true
         
         if (alreadyOnTab) {
-            // If already on the tab, pop to root of that tab to refresh
             navController.popBackStack(itemId, false)
             return true
         }
