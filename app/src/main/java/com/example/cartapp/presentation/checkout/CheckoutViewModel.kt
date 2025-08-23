@@ -67,6 +67,10 @@ class CheckoutViewModel @Inject constructor(
         }
     }
     
+    fun resetOrderState() {
+        _uiState.update { it.copy(isOrderPlaced = false, orderNumber = "") }
+    }
+    
     private fun generateOrderNumber(): String {
         return "ORD-${System.currentTimeMillis()}"
     }

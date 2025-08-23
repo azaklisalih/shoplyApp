@@ -1,25 +1,33 @@
 package com.example.cartapp.presentation.checkout
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.WindowCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.cartapp.R
 import com.example.cartapp.databinding.FragmentCheckoutBinding
+import com.example.cartapp.presentation.common.StatusBarManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CheckoutFragment : Fragment() {
+
     private var _binding: FragmentCheckoutBinding? = null
     private val binding get() = _binding!!
+    
     private val viewModel: CheckoutViewModel by viewModels()
+    
+    @Inject
+    lateinit var statusBarManager: StatusBarManager
+    
+    private var hasNavigated = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,58 +35,44 @@ class CheckoutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCheckoutBinding.inflate(inflater, container, false)
-        binding.vm = viewModel
-        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCustomAppBar()
-        setupListeners()
+        
+        statusBarManager.setPrimaryColorStatusBar(requireActivity())
+        
+        setupToolbar()
+        setupValidation()
         setupObservers()
-        setupWindowInsets()
+        setupClickListeners()
     }
 
-    private fun setupCustomAppBar() {
-        binding.customAppBar.tvTitle.text = getString(R.string.checkout_title)
-        
-        binding.customAppBar.btnBack.visibility = View.VISIBLE
-        binding.customAppBar.btnBack.setImageResource(R.drawable.ic_arrow_back)
-        binding.customAppBar.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-        
-        binding.customAppBar.btnRightAction.visibility = View.GONE
-        binding.customAppBar.customContentArea.visibility = View.GONE
-    }
-
-    private fun setupWindowInsets() {
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            
-            binding.root.setPadding(
-                binding.root.paddingLeft,
-                insets.top,
-                binding.root.paddingRight,
-                binding.root.paddingBottom
-            )
-            
-            androidx.core.view.WindowInsetsCompat.CONSUMED
+    private fun setupToolbar() {
+        binding.customAppBar.apply {
+            tvTitle.text = getString(R.string.checkout_title)
+            btnBack.setImageResource(R.drawable.ic_arrow_back)
+            btnBack.visibility = View.VISIBLE
+            btnBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 
-    private fun setupListeners() {
+    private fun setupClickListeners() {
         binding.btnConfirm.setOnClickListener {
-            val name = binding.etName.text.toString()
-            val email = binding.etEmail.text.toString()
-            val phone = binding.etPhone.text.toString()
+            val name = binding.etName.text.toString().trim()
+            val email = binding.etEmail.text.toString().trim()
+            val phone = binding.etPhone.text.toString().trim()
             
             if (validateInputs(name, email, phone)) {
                 viewModel.placeOrder(name, email, phone)
             }
         }
-        
+    }
+
+    private fun setupValidation() {
         binding.etName.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -175,12 +169,14 @@ class CheckoutFragment : Fragment() {
                     } else if (uiState.error != null) {
                         binding.btnConfirm.isEnabled = true
                         binding.btnConfirm.text = getString(R.string.checkout_confirm_order_button)
-                    } else if (uiState.isOrderPlaced) {
+                    } else if (uiState.isOrderPlaced && !hasNavigated) {
+                        hasNavigated = true
                         findNavController().navigate(
                             CheckoutFragmentDirections.actionCheckoutFragmentToOrderSuccessFragment(
                                 orderNumber = uiState.orderNumber
                             )
                         )
+                        viewModel.resetOrderState()
                     } else {
                         binding.btnConfirm.isEnabled = true
                         binding.btnConfirm.text = getString(R.string.checkout_confirm_order_button)

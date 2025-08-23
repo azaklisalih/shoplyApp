@@ -72,17 +72,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:background="@drawable/add_to_cart_button"
-                android:layout_marginBottom="16dp"/>
-
-            <Button
-                android:id="@+id/btnContinueShopping"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:text="@string/order_success_continue_shopping"
-                android:textColor="@color/primary_blue"
-                android:textSize="16sp"
-                android:background="@drawable/button_outline"/>
+                android:background="@drawable/add_to_cart_button"/>
 
         </LinearLayout>
 

@@ -1,16 +1,15 @@
 package com.example.cartapp.presentation.ordersuccess
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.example.cartapp.R
+import com.example.cartapp.MainActivity
 import com.example.cartapp.databinding.FragmentOrderSuccessBinding
-import com.example.cartapp.presentation.ui_state.OrderSuccessUIState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,24 +41,13 @@ class OrderSuccessFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnGoHome.setOnClickListener {
-            findNavController().navigate(
-                OrderSuccessFragmentDirections.actionOrderSuccessFragmentToHomeFragment()
-            ) {
-                popUpTo(R.id.homeFragment) { inclusive = true }
-            }
-        }
-        
-        binding.btnContinueShopping.setOnClickListener {
-            findNavController().navigate(
-                OrderSuccessFragmentDirections.actionOrderSuccessFragmentToHomeFragment()
-            ) {
-                popUpTo(R.id.homeFragment) { inclusive = true }
-            }
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
     }
     
     private fun setupObservers() {
-        // Observe UI state if needed
     }
 
     override fun onDestroyView() {
