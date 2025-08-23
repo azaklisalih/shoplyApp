@@ -75,7 +75,7 @@ class ProductDetailFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnAddToCart.setOnClickListener {
-            viewModel.addToCart()
+            viewModel.addToCartWithAnimation()
         }
 
         binding.ivFavorite.setOnClickListener {
@@ -101,6 +101,8 @@ class ProductDetailFragment : Fragment() {
                         }
                         
                         updateFavoriteUI(uiState.isFavorite, binding)
+                        updateCartUI(uiState.isInCart, binding)
+                        updateAnimationUI(uiState.showSuccessAnimation, binding)
                     }
                 }
             }
@@ -129,6 +131,49 @@ class ProductDetailFragment : Fragment() {
             binding.ivFavorite.setImageResource(R.drawable.ic_star_filled)
         } else {
             binding.ivFavorite.setImageResource(R.drawable.ic_star_outline)
+        }
+    }
+    
+    private fun updateCartUI(isInCart: Boolean, binding: FragmentProductDetailBinding) {
+        // Always show "Add to Cart" button with same style
+        binding.btnAddToCart.text = "Add to Cart"
+        binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
+    }
+    
+    private fun updateAnimationUI(showAnimation: Boolean, binding: FragmentProductDetailBinding) {
+        println("🎬 Animation state: $showAnimation")
+        
+        if (showAnimation) {
+            println("🎬 Starting animation...")
+            
+            // Show success message with different color
+            binding.btnAddToCart.text = "Added! ✓"
+            binding.btnAddToCart.setBackgroundColor(android.graphics.Color.GREEN)
+            binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
+            
+            // Add scale animation
+            binding.btnAddToCart.animate()
+                .scaleX(1.2f)
+                .scaleY(1.2f)
+                .setDuration(300)
+                .withEndAction {
+                    println("🎬 Scale up animation completed")
+                    binding.btnAddToCart.animate()
+                        .scaleX(1.0f)
+                        .scaleY(1.0f)
+                        .setDuration(300)
+                        .withEndAction {
+                            println("🎬 Scale down animation completed")
+                        }
+                        .start()
+                }
+                .start()
+        } else {
+            println("🎬 Resetting to normal state")
+            // Reset to normal state
+            binding.btnAddToCart.text = "Add to Cart"
+            binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
+            binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
         }
     }
 

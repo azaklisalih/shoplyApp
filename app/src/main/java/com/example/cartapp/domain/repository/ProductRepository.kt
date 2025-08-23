@@ -30,4 +30,5 @@ interface ProductRepository {
     suspend fun removeFromFavorites(productId: String)
     fun getFavorites(): Flow<List<Favorite>>
     fun isFavorite(productId: String): Flow<Boolean>
+    fun observeFavoriteIds(): Flow<Set<String>>
 }

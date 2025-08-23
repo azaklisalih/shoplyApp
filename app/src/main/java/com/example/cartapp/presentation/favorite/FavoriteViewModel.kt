@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,6 +86,14 @@ class FavoriteViewModel @Inject constructor(
             try {
                 addToCartUseCase(product, 1)
                 println("✅ Added to cart from favorites: ${product.name}")
+                
+                // Show animation
+                _uiState.update { it.copy(animatedCartProductId = product.id) }
+                
+                // Hide animation after delay
+                delay(2000)
+                _uiState.update { it.copy(animatedCartProductId = null) }
+                
             } catch (e: Exception) {
                 println("❌ Error adding to cart from favorites: ${e.message}")
             }

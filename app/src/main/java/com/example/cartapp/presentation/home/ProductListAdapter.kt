@@ -19,6 +19,8 @@ class ProductListAdapter(
     private var isLoading = false
     private var isLoadingMore = false
     private var favoriteStates: Map<String, Boolean> = emptyMap()
+    private var animatedCartProductId: String? = null
+    private var animatedFavoriteProductId: String? = null
 
     init {
         setHasStableIds(true)
@@ -86,6 +88,12 @@ class ProductListAdapter(
         favoriteStates = states
         notifyDataSetChanged()
     }
+    
+    fun updateAnimationStates(cartProductId: String?, favoriteProductId: String?) {
+        animatedCartProductId = cartProductId
+        animatedFavoriteProductId = favoriteProductId
+        notifyDataSetChanged()
+    }
 
     inner class ProductViewHolder(
         private val binding: ItemProductBinding
@@ -112,7 +120,57 @@ class ProductListAdapter(
                 binding.ivFavorite.setImageResource(com.example.cartapp.R.drawable.ic_star_outline)
             }
             
+            // Handle animations
+            updateCartButtonAnimation(product.id)
+            updateFavoriteButtonAnimation(product.id)
+            
             binding.executePendingBindings()
+        }
+        
+        private fun updateCartButtonAnimation(productId: String) {
+            if (animatedCartProductId == productId) {
+                // Show success animation
+                binding.btnAddToCart.text = "Added! ✓"
+                binding.btnAddToCart.setBackgroundColor(android.graphics.Color.GREEN)
+                binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
+                
+                // Add scale animation
+                binding.btnAddToCart.animate()
+                    .scaleX(1.2f)
+                    .scaleY(1.2f)
+                    .setDuration(300)
+                    .withEndAction {
+                        binding.btnAddToCart.animate()
+                            .scaleX(1.0f)
+                            .scaleY(1.0f)
+                            .setDuration(300)
+                            .start()
+                    }
+                    .start()
+            } else {
+                // Reset to normal state
+                binding.btnAddToCart.text = "Add to Cart"
+                binding.btnAddToCart.setBackgroundResource(com.example.cartapp.R.drawable.add_to_cart_button)
+                binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
+            }
+        }
+        
+        private fun updateFavoriteButtonAnimation(productId: String) {
+            if (animatedFavoriteProductId == productId) {
+                // Add scale animation to favorite button
+                binding.ivFavorite.animate()
+                    .scaleX(1.3f)
+                    .scaleY(1.3f)
+                    .setDuration(300)
+                    .withEndAction {
+                        binding.ivFavorite.animate()
+                            .scaleX(1.0f)
+                            .scaleY(1.0f)
+                            .setDuration(300)
+                            .start()
+                    }
+                    .start()
+            }
         }
     }
 

@@ -100,7 +100,7 @@ class FavoriteFragment : Fragment() {
                             binding.rvFavorites.visibility = View.GONE
                             println("❌ FavoriteFragment error: ${uiState.error}")
                         } else {
-                            updateFavoritesList(uiState.favorites, binding)
+                            updateFavoritesList(uiState.favorites, uiState, binding)
                         }
                     }
                 }
@@ -108,7 +108,7 @@ class FavoriteFragment : Fragment() {
         }
     }
 
-    private fun updateFavoritesList(favorites: List<com.example.cartapp.domain.model.Favorite>, binding: FragmentFavoriteBinding) {
+    private fun updateFavoritesList(favorites: List<com.example.cartapp.domain.model.Favorite>, uiState: FavoriteUIState, binding: FragmentFavoriteBinding) {
         try {
             if (favorites.isEmpty()) {
                 binding.rvFavorites.visibility = View.GONE
@@ -116,6 +116,7 @@ class FavoriteFragment : Fragment() {
                 binding.rvFavorites.visibility = View.VISIBLE
                 binding.rvFavorites.adapter = adapter
                 adapter.submitList(favorites)
+                adapter.updateAnimationState(uiState.animatedCartProductId)
                 println("✅ Updated favorites list with ${favorites.size} items")
             }
         } catch (e: Exception) {

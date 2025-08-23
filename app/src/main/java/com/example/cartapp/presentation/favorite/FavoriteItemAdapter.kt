@@ -14,6 +14,8 @@ class FavoriteItemAdapter(
     private val onRemoveFavorite: (String) -> Unit
 ) : ListAdapter<Favorite, FavoriteItemAdapter.FavoriteItemViewHolder>(DIFF_CALLBACK) {
 
+    private var animatedCartProductId: String? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteItemViewHolder {
         val binding = ItemProductBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -23,6 +25,11 @@ class FavoriteItemAdapter(
 
     override fun onBindViewHolder(holder: FavoriteItemViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+    
+    fun updateAnimationState(cartProductId: String?) {
+        animatedCartProductId = cartProductId
+        notifyDataSetChanged()
     }
 
     inner class FavoriteItemViewHolder(
@@ -59,6 +66,37 @@ class FavoriteItemAdapter(
             binding.ivFavorite.setImageResource(com.example.cartapp.R.drawable.ic_star_filled)
             binding.ivFavorite.setOnClickListener {
                 onRemoveFavorite(favorite.productId)
+            }
+            
+            // Handle cart button animation
+            updateCartButtonAnimation(favorite.productId)
+        }
+        
+        private fun updateCartButtonAnimation(productId: String) {
+            if (animatedCartProductId == productId) {
+                // Show success animation
+                binding.btnAddToCart.text = "Added! ✓"
+                binding.btnAddToCart.setBackgroundColor(android.graphics.Color.GREEN)
+                binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
+                
+                // Add scale animation
+                binding.btnAddToCart.animate()
+                    .scaleX(1.2f)
+                    .scaleY(1.2f)
+                    .setDuration(300)
+                    .withEndAction {
+                        binding.btnAddToCart.animate()
+                            .scaleX(1.0f)
+                            .scaleY(1.0f)
+                            .setDuration(300)
+                            .start()
+                    }
+                    .start()
+            } else {
+                // Reset to normal state
+                binding.btnAddToCart.text = "Add to Cart"
+                binding.btnAddToCart.setBackgroundResource(com.example.cartapp.R.drawable.add_to_cart_button)
+                binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
             }
         }
     }

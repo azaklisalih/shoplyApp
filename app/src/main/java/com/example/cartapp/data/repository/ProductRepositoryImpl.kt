@@ -155,4 +155,9 @@ class ProductRepositoryImpl @Inject constructor(
         emit(count > 0)
     }.flowOn(Dispatchers.IO)
 
+    override fun observeFavoriteIds(): Flow<Set<String>> = 
+        favoriteDao.getAll().map { favorites ->
+            favorites.map { it.productId }.toSet()
+        }.flowOn(Dispatchers.IO)
+
 }

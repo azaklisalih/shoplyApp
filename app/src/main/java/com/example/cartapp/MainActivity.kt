@@ -1,6 +1,7 @@
 package com.example.cartapp
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -52,28 +53,32 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
 
         binding.bottomNav.setOnItemSelectedListener { item ->
-            // If Home tab is selected, refresh the data
-            if (item.itemId == R.id.homeFragment) {
-                homeViewModel.fetchProducts()
-            }
-            
             // Update status bar color based on selected fragment
             updateStatusBarColor(item.itemId)
             
+            // Handle navigation using NavigationCoordinator
             navigationRouter.handleBottomNavigation(navController, item.itemId)
         }
 
         binding.bottomNav.setOnItemReselectedListener { item ->
-            // When the same tab is reselected, pop to root to refresh
-            if (item.itemId == R.id.homeFragment) {
-                homeViewModel.fetchProducts()
+            // When the same tab is reselected, refresh the data
+            when (item.itemId) {
+                R.id.homeFragment -> homeViewModel.refreshHome()
+                R.id.favoriteFragment -> {
+                    // Refresh favorites if needed
+                    // You can add favorite refresh logic here
+                }
+                R.id.cartFragment -> {
+                    // Refresh cart if needed
+                    // You can add cart refresh logic here
+                }
             }
             
             // Update status bar color based on reselected fragment
             updateStatusBarColor(item.itemId)
-            
-            navController.popBackStack(item.itemId, false)
         }
+        
+
         
         // Set initial status bar color
         updateStatusBarColor(R.id.homeFragment)
@@ -110,10 +115,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     fun hideBottomNavigation() {
-        binding.bottomNav.visibility = android.view.View.GONE
+        binding.bottomNav.visibility = View.GONE
     }
     
     fun showBottomNavigation() {
-        binding.bottomNav.visibility = android.view.View.VISIBLE
+        binding.bottomNav.visibility = View.VISIBLE
     }
 } 

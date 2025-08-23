@@ -5,5 +5,6 @@ import com.example.cartapp.domain.model.Favorite
 data class FavoriteUIState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val favorites: List<Favorite> = emptyList()
+    val favorites: List<Favorite> = emptyList(),
+    val animatedCartProductId: String? = null
 ) 

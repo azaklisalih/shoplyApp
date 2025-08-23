@@ -24,5 +24,7 @@ data class HomeUIState(
     val modelSearchQuery: String = "",
     val isFilterDataLoading: Boolean = false,
     val filterError: String? = null,
-    val brandModelMap: Map<String, List<String>> = emptyMap()
+    val brandModelMap: Map<String, List<String>> = emptyMap(),
+    val animatedCartProductId: String? = null,
+    val animatedFavoriteProductId: String? = null
 ) 

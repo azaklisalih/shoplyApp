@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cartapp.R
+import com.example.cartapp.MainActivity
 import com.example.cartapp.databinding.FragmentHomeBinding
 import com.example.cartapp.presentation.ui_state.HomeUIState
 
@@ -131,6 +132,22 @@ class HomeFragment : Fragment() {
                     viewModel.loadMoreProducts()
                 }
             }
+            
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                
+                when (newState) {
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        (activity as? MainActivity)?.showBottomNavigation()
+                    }
+                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+                        (activity as? MainActivity)?.hideBottomNavigation()
+                    }
+                    RecyclerView.SCROLL_STATE_SETTLING -> {
+                        (activity as? MainActivity)?.hideBottomNavigation()
+                    }
+                }
+            }
         })
     }
 
@@ -177,6 +194,7 @@ class HomeFragment : Fragment() {
                         adapter.setLoadingMore(state.isLoadingMore)
                         adapter.submitProducts(state.products)
                         adapter.updateFavoriteStates(state.favoriteStates)
+                        adapter.updateAnimationStates(state.animatedCartProductId, state.animatedFavoriteProductId)
                         binding.errorLayout.visibility = View.GONE
                         binding.rvProducts.visibility = View.VISIBLE
                     }

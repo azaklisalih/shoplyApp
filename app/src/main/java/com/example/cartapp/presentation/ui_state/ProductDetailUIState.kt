@@ -7,5 +7,6 @@ data class ProductDetailUIState(
     val error: String? = null,
     val product: Product? = null,
     val isFavorite: Boolean = false,
-    val isInCart: Boolean = false
+    val isInCart: Boolean = false,
+    val showSuccessAnimation: Boolean = false
 ) 
