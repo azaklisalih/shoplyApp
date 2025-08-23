@@ -1,6 +1,6 @@
 package com.example.cartapp.di
 
-import com.example.cartapp.data.home.repository.ProductRepositoryImpl
+import com.example.cartapp.data.repository.ProductRepositoryImpl
 import com.example.cartapp.domain.repository.ProductRepository
 import dagger.Binds
 import dagger.Module

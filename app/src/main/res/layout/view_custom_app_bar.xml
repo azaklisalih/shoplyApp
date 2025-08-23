@@ -8,7 +8,6 @@
     android:orientation="vertical"
     android:background="@drawable/header_gradient">
 
-    <!-- Title Row -->
     <LinearLayout
         android:id="@+id/titleRow"
         android:layout_width="match_parent"
@@ -17,7 +16,6 @@
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
-        <!-- Back Button (optional) -->
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="24dp"
@@ -28,7 +26,6 @@
             android:padding="4dp"
             android:alpha="0.8"/>
 
-        <!-- Title -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
@@ -40,7 +37,6 @@
             android:textStyle="bold"
             android:gravity="center"/>
 
-        <!-- Right Action Button (optional) -->
         <ImageView
             android:id="@+id/btnRightAction"
             android:layout_width="24dp"
@@ -52,7 +48,6 @@
 
     </LinearLayout>
 
-    <!-- Custom Content Area -->
     <LinearLayout
         android:id="@+id/customContentArea"
         android:layout_width="match_parent"
@@ -62,7 +57,7 @@
         android:paddingBottom="16dp"
         android:visibility="gone">
 
-        <!-- This area will be populated by fragments -->
+
 
     </LinearLayout>
 

@@ -3,6 +3,7 @@ package com.example.cartapp.presentation.checkout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cartapp.domain.repository.ProductRepository
+import com.example.cartapp.presentation.ui_state.CheckoutUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,14 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class CheckoutUIState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val totalAmount: Double = 0.0,
-    val isOrderPlaced: Boolean = false,
-    val orderNumber: String = ""
-)
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(

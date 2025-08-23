@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -16,9 +15,9 @@
         android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        app:cardCornerRadius="8dp"
         app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/white">
+        app:cardBackgroundColor="@color/white"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +26,6 @@
             android:gravity="center_vertical"
             android:padding="16dp">
 
-            <!-- Product Info -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,51 +52,48 @@
 
             </LinearLayout>
 
-            <!-- Quantity Controls -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- Minus Button -->
-                <Button
+                <TextView
                     android:id="@+id/btnMinus"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:text="-"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:gravity="center"
                     android:background="@drawable/quantity_button_background"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"/>
+                    android:text="-"
+                    android:textSize="24sp"
+                    android:textColor="@color/dark_gray"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
 
-                <!-- Quantity -->
                 <TextView
-                    android:id="@+id/tvQuantity"
+                    android:id="@+id/tvCounter"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:text="@{String.valueOf(cartItem.quantity)}"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:gravity="center"
+                    android:text="@{String.valueOf(cartItem.quantity)}"
                     android:background="@drawable/quantity_selected_background"
-                    android:layout_marginHorizontal="4dp"/>
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
 
-                <!-- Plus Button -->
-                <Button
+                <TextView
                     android:id="@+id/btnPlus"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:text="+"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:gravity="center"
                     android:background="@drawable/quantity_button_background"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"/>
+                    android:text="+"
+                    android:textSize="24sp"
+                    android:textColor="@color/dark_gray"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground" />
 
             </LinearLayout>
 

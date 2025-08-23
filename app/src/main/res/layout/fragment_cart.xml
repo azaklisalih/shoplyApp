@@ -15,7 +15,6 @@
         android:background="@color/white"
         tools:context=".presentation.cart.CartFragment">
 
-        <!-- Custom App Bar -->
         <include
             android:id="@+id/customAppBar"
             layout="@layout/view_custom_app_bar"
@@ -23,7 +22,6 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <!-- Cart Items -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCartItems"
             android:layout_width="match_parent"
@@ -32,7 +30,6 @@
             app:layout_constraintTop_toBottomOf="@id/customAppBar"
             app:layout_constraintBottom_toTopOf="@id/totalSection"/>
 
-        <!-- Total Section -->
         <LinearLayout
             android:id="@+id/totalSection"
             android:layout_width="match_parent"
@@ -40,11 +37,10 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:layout_marginBottom="80dp"
+            android:layout_marginBottom="100dp"
             android:background="@color/white"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Total Text -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -63,14 +59,13 @@
                     android:id="@+id/tvTotal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="124124124 ₺"
+                    android:text="0.00"
                     android:textColor="@color/text_primary"
                     android:textSize="24sp"
                     android:textStyle="bold"/>
 
             </LinearLayout>
 
-            <!-- Complete Button -->
             <Button
                 android:id="@+id/btnComplete"
                 android:layout_width="wrap_content"

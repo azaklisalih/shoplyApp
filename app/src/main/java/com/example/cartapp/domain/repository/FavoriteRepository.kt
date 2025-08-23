@@ -1,6 +1,6 @@
 package com.example.cartapp.domain.repository
 
-import com.example.cartapp.data.home.local.entities.FavoriteEntity
+import com.example.cartapp.data.favorite.local.entities.FavoriteEntity
 import kotlinx.coroutines.flow.Flow
 
 interface FavoriteRepository {

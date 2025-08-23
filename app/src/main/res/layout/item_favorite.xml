@@ -24,7 +24,6 @@
             android:gravity="center_vertical"
             android:padding="16dp">
 
-            <!-- Product Image -->
             <ImageView
                 android:id="@+id/ivProductImage"
                 android:layout_width="60dp"
@@ -34,7 +33,6 @@
                 app:imageUrl="@{favorite.image}"
                 android:layout_marginEnd="12dp"/>
 
-            <!-- Product Info -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -61,7 +59,6 @@
 
             </LinearLayout>
 
-            <!-- Remove Button -->
             <Button
                 android:id="@+id/btnRemove"
                 android:layout_width="40dp"

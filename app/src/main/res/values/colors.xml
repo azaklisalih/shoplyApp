@@ -12,6 +12,8 @@
     <color name="text_secondary">#6B7280</color>
     <color name="fav_selected_color">#FFFFD700</color>
     <color name="fav_unselected_color">#FFD9D9D9</color>
+    <color name="price_buttons_color">#CCCCCC</color>
+    <color name="quantity_button_color">#E0E0E0</color>
     <color name="price_blue">#2A59FE</color>
     
     <!-- Legacy Colors -->

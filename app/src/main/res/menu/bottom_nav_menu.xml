@@ -6,12 +6,17 @@
         android:title="@string/nav_home" />
 
     <item
+        android:id="@+id/cartFragment"
+        android:icon="@drawable/ic_basket"
+        android:title="@string/nav_cart" />
+
+    <item
         android:id="@+id/favoriteFragment"
         android:icon="@drawable/ic_favorite_star"
         android:title="@string/nav_favorites" />
 
     <item
-        android:id="@+id/cartFragment"
-        android:icon="@drawable/ic_basket"
-        android:title="@string/nav_cart" />
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/nav_profile" />
 </menu>

@@ -15,14 +15,7 @@ import com.example.cartapp.domain.usecase.cart.AddToCartUseCase
 import com.example.cartapp.domain.usecase.favorite.AddToFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.IsFavoriteUseCase
-
-data class ProductDetailUIState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val product: com.example.cartapp.domain.model.Product? = null,
-    val isFavorite: Boolean = false,
-    val isInCart: Boolean = false
-)
+import com.example.cartapp.presentation.ui_state.ProductDetailUIState
 
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(

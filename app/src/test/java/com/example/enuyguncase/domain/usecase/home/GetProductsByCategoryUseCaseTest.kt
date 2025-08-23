@@ -1,10 +1,7 @@
 package com.example.cartapp.domain.usecase.home
 
-import com.example.cartapp.data.home.remote.dto.DimensionsDto
-import com.example.cartapp.data.home.remote.dto.MetaDto
 import com.example.cartapp.data.home.remote.dto.ProductDto
-import com.example.cartapp.data.home.remote.dto.ProductsResponse
-import com.example.cartapp.domain.model.ProductPage
+import com.example.cartapp.domain.model.Product
 import com.example.cartapp.domain.repository.ProductRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -30,105 +27,84 @@ class GetProductsByCategoryUseCaseTest {
     }
 
     @Test
-    fun `invoke should return ProductPage with category products`() = runTest {
+    fun `invoke should return products when repository returns category data`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = listOf(
-                ProductDto(
-                    id = 1,
-                    title = "Electronics Product",
-                    description = "Electronics description",
-                    category = "electronics",
-                    price = 99.99,
-                    discountPercentage = 10.0,
-                    rating = 4.5,
-                    stock = 50,
-                    tags = listOf("electronics"),
-                    brand = "Electronics Brand",
-                    sku = "ELEC-001",
-                    weight = 500,
-                    dimensions = DimensionsDto(10.0, 5.0, 2.0),
-                    warrantyInformation = "1 year warranty",
-                    shippingInformation = "Free shipping",
-                    availabilityStatus = "In Stock",
-                    reviews = emptyList(),
-                    returnPolicy = "30 days return",
-                    minimumOrderQuantity = 1,
-                    meta = MetaDto("2024-01-01", "2024-01-01", "123456789", "QR123"),
-                    thumbnail = "https://example.com/electronics.jpg",
-                    images = listOf("https://example.com/electronics1.jpg")
-                )
+        val mockProducts = listOf(
+            Product(
+                id = "1",
+                name = "Electronics Product 1",
+                image = "image1.jpg",
+                price = "99.99",
+                description = "Description 1",
+                model = "Model 1",
+                brand = "Brand 1",
+                createdAt = "2024-01-01"
             ),
-            total = 1,
-            skip = 0,
-            limit = 10
+            Product(
+                id = "2",
+                name = "Electronics Product 2",
+                image = "image2.jpg",
+                price = "49.99",
+                description = "Description 2",
+                model = "Model 2",
+                brand = "Brand 2",
+                createdAt = "2024-01-02"
+            )
         )
 
-        whenever(mockRepository.getProductsByCategoryFlow("electronics", 10, 0, "price", "desc"))
-            .thenReturn(flowOf(mockProductsResponse))
+        whenever(mockRepository.getProductsFlow(null, null, null, null, "electronics", null))
+            .thenReturn(flowOf(mockProducts))
 
         // When
-        val result = getProductsByCategoryUseCase("electronics", 10, 0, "price", "desc")
+        val result = getProductsByCategoryUseCase("electronics")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(1, productPage.products.size)
-            assertEquals(1, productPage.total)
-            assertEquals(1, productPage.products[0].id)
-            assertEquals("Electronics Product", productPage.products[0].title)
-            assertEquals("electronics", productPage.products[0].category)
+        result.collect { products ->
+            assertEquals(2, products.size)
+            assertEquals("1", products[0].id)
+            assertEquals("Electronics Product 1", products[0].name)
+            assertEquals("2", products[1].id)
+            assertEquals("Electronics Product 2", products[1].name)
         }
 
-        verify(mockRepository).getProductsByCategoryFlow("electronics", 10, 0, "price", "desc")
+        verify(mockRepository).getProductsFlow(null, null, null, null, "electronics", null)
     }
 
     @Test
-    fun `invoke should return empty ProductPage when category has no products`() = runTest {
+    fun `invoke should return empty list when no category products found`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = emptyList(),
-            total = 0,
-            skip = 0,
-            limit = 10
-        )
+        val mockProducts = emptyList<Product>()
 
-        whenever(mockRepository.getProductsByCategoryFlow("nonexistent", null, null, null, null))
-            .thenReturn(flowOf(mockProductsResponse))
+        whenever(mockRepository.getProductsFlow(null, null, null, null, "nonexistent", null))
+            .thenReturn(flowOf(mockProducts))
 
         // When
         val result = getProductsByCategoryUseCase("nonexistent")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(0, productPage.products.size)
-            assertEquals(0, productPage.total)
+        result.collect { products ->
+            assertEquals(0, products.size)
         }
 
-        verify(mockRepository).getProductsByCategoryFlow("nonexistent", null, null, null, null)
+        verify(mockRepository).getProductsFlow(null, null, null, null, "nonexistent", null)
     }
 
     @Test
-    fun `invoke should handle empty category string`() = runTest {
+    fun `invoke should handle empty category`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = emptyList(),
-            total = 0,
-            skip = 0,
-            limit = 10
-        )
+        val mockProducts = emptyList<Product>()
 
-        whenever(mockRepository.getProductsByCategoryFlow("", null, null, null, null))
-            .thenReturn(flowOf(mockProductsResponse))
+        whenever(mockRepository.getProductsFlow(null, null, null, null, "", null))
+            .thenReturn(flowOf(mockProducts))
 
         // When
         val result = getProductsByCategoryUseCase("")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(0, productPage.products.size)
-            assertEquals(0, productPage.total)
+        result.collect { products ->
+            assertEquals(0, products.size)
         }
 
-        verify(mockRepository).getProductsByCategoryFlow("", null, null, null, null)
+        verify(mockRepository).getProductsFlow(null, null, null, null, "", null)
     }
 } 

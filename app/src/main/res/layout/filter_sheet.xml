@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Başlık -->
         <TextView
             android:id="@+id/tvFilterTitle"
             android:layout_width="0dp"
@@ -25,7 +24,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- ChipGroup dinamik kategori çiplerini barındırır -->
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chipGroupCategories"
             android:layout_width="0dp"
@@ -37,7 +35,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Temizle ve Uygula butonlarının kapsayıcısı -->
         <LinearLayout
             android:id="@+id/buttonContainer"
             android:layout_width="0dp"

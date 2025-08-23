@@ -5,6 +5,7 @@
     <string name="nav_home">Ana Sayfa</string>
     <string name="nav_favorites">Favoriler</string>
     <string name="nav_cart">Sepet</string>
+    <string name="nav_profile">Profil</string>
     
     <!-- Home Screen -->
     <string name="home_products">Ürünler</string>

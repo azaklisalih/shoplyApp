@@ -15,7 +15,6 @@
         android:background="@color/white"
         tools:context=".presentation.favorite.FavoriteFragment">
 
-        <!-- Custom App Bar -->
         <include
             android:id="@+id/customAppBar"
             layout="@layout/view_custom_app_bar"
@@ -23,7 +22,6 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <!-- Favorites Grid -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvFavorites"
             android:layout_width="match_parent"

@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
-        <!-- Product Image Placeholder -->
         <View
             android:id="@+id/imgProductShimmer"
             android:layout_width="150dp"
@@ -23,7 +22,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Favorite Star Placeholder -->
         <View
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -32,7 +30,6 @@
             app:layout_constraintEnd_toEndOf="@id/imgProductShimmer"
             android:layout_margin="8dp" />
 
-        <!-- Price Placeholder -->
         <View
             android:id="@+id/tvPriceShimmer"
             android:layout_width="60dp"
@@ -42,7 +39,6 @@
             app:layout_constraintTop_toBottomOf="@id/imgProductShimmer"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!-- Product Title Placeholder -->
         <View
             android:id="@+id/tvTitleShimmer"
             android:layout_width="0dp"
@@ -53,7 +49,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Add to Cart Button Placeholder -->
         <View
             android:layout_width="0dp"
             android:layout_height="40dp"

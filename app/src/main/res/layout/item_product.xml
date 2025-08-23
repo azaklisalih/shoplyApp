@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
+        android:layout_marginBottom="14dp"
         app:cardCornerRadius="0dp"
         app:cardElevation="2dp"
         app:cardBackgroundColor="@color/card_background">
@@ -21,7 +22,6 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-            <!-- Product Image -->
             <ImageView
                 android:id="@+id/imgProduct"
                 android:layout_width="150dp"
@@ -33,7 +33,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Favorite Star -->
             <ImageView
                 android:id="@+id/ivFavorite"
                 android:layout_width="24dp"
@@ -47,7 +46,6 @@
                 app:layout_constraintEnd_toEndOf="@id/imgProduct"
                 android:layout_margin="8dp" />
 
-            <!-- Price -->
             <TextView
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
@@ -60,7 +58,6 @@
                 app:layout_constraintTop_toBottomOf="@id/imgProduct"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Product Title -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="0dp"
@@ -75,7 +72,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <!-- Add to Cart Button -->
             <Button
                 android:id="@+id/btnAddToCart"
                 android:layout_width="0dp"

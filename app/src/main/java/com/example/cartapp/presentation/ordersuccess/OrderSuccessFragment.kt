@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.cartapp.databinding.FragmentOrderSuccessBinding
+import com.example.cartapp.presentation.ui_state.OrderSuccessUIState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,12 +35,9 @@ class OrderSuccessFragment : Fragment() {
     }
 
     private fun setupUI() {
-        // Display order number from navigation args
-        // TODO: Update UI with order number
     }
 
     private fun setupListeners() {
-        // TODO: Add navigation listeners
     }
 
     override fun onDestroyView() {

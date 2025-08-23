@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.cartapp.databinding.FragmentCheckoutBinding
+import com.example.cartapp.presentation.ui_state.CheckoutUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -72,9 +73,7 @@ class CheckoutFragment : Fragment() {
                 } else if (uiState.error != null) {
                     binding.btnConfirm.isEnabled = true
                     binding.btnConfirm.text = "Confirm"
-                    // Show error message
                 } else if (uiState.isOrderPlaced) {
-                    // Navigate to order success
                     findNavController().navigate(
                         CheckoutFragmentDirections.actionCheckoutFragmentToOrderSuccessFragment(
                             orderNumber = uiState.orderNumber

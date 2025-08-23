@@ -6,7 +6,6 @@
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
-    <!-- Filter Button -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btn_filter"
         android:layout_width="wrap_content"
@@ -39,7 +38,6 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Sort Button -->
     <androidx.cardview.widget.CardView
         android:id="@+id/btn_sort"
         android:layout_width="wrap_content"

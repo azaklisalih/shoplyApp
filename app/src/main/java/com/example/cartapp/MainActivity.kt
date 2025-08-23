@@ -8,7 +8,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.cartapp.databinding.ActivityMainBinding
 import com.example.cartapp.presentation.cart.CartViewModel

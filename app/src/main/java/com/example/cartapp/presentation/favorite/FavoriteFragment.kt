@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.cartapp.databinding.FragmentFavoriteBinding
+import com.example.cartapp.presentation.ui_state.FavoriteUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -24,6 +25,7 @@ class FavoriteFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: FavoriteViewModel by viewModels()
     private lateinit var adapter: FavoriteItemAdapter
+    private lateinit var shimmerAdapter: FavoriteShimmerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,20 +47,16 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        // Set title
         binding.customAppBar.tvTitle.text = "Favorites"
         
-        // Hide back button
         binding.customAppBar.btnBack.visibility = View.GONE
         
-        // Hide custom content area since we're not using it
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
 
     private fun setupRecyclerView() {
         adapter = FavoriteItemAdapter(
             onItemClick = { favorite ->
-                // Navigate to product detail
                 findNavController().navigate(
                     FavoriteFragmentDirections.actionFavoriteFragmentToProductDetailFragment(
                         favorite.productId.toInt()
@@ -66,7 +64,6 @@ class FavoriteFragment : Fragment() {
                 )
             },
             onAddToCart = { favorite ->
-                // Convert Favorite to Product and add to cart
                 val product = com.example.cartapp.domain.model.Product(
                     id = favorite.productId,
                     name = favorite.name,
@@ -84,6 +81,8 @@ class FavoriteFragment : Fragment() {
             }
         )
         
+        shimmerAdapter = FavoriteShimmerAdapter()
+        
         binding.rvFavorites.adapter = adapter
         binding.rvFavorites.layoutManager = GridLayoutManager(requireContext(), 2)
     }
@@ -94,14 +93,13 @@ class FavoriteFragment : Fragment() {
                 viewModel.uiState.collect { uiState ->
                     _binding?.let { binding ->
                         if (uiState.isLoading) {
-                            // Show loading state
-                            binding.rvFavorites.visibility = View.GONE
+                            binding.rvFavorites.adapter = shimmerAdapter
+                            shimmerAdapter.setShimmerCount(6)
+                            binding.rvFavorites.visibility = View.VISIBLE
                         } else if (uiState.error != null) {
-                            // Show error state
                             binding.rvFavorites.visibility = View.GONE
                             println("❌ FavoriteFragment error: ${uiState.error}")
                         } else {
-                            // Update favorites list
                             updateFavoritesList(uiState.favorites, binding)
                         }
                     }
@@ -113,11 +111,10 @@ class FavoriteFragment : Fragment() {
     private fun updateFavoritesList(favorites: List<com.example.cartapp.domain.model.Favorite>, binding: FragmentFavoriteBinding) {
         try {
             if (favorites.isEmpty()) {
-                // Show empty state
                 binding.rvFavorites.visibility = View.GONE
             } else {
-                // Show favorites list
                 binding.rvFavorites.visibility = View.VISIBLE
+                binding.rvFavorites.adapter = adapter
                 adapter.submitList(favorites)
                 println("✅ Updated favorites list with ${favorites.size} items")
             }

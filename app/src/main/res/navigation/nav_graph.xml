@@ -38,7 +38,6 @@
             app:destination="@id/productDetailFragment" />
     </fragment>
 
-    <!-- Ürün detayı ve checkout sayfaları da buraya eklenebilir -->
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.example.cartapp.presentation.productdetail.ProductDetailFragment"

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.cartapp.databinding.FragmentCartBinding
-import com.example.cartapp.presentation.cart.CartUIState
+import com.example.cartapp.presentation.ui_state.CartUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,6 +22,7 @@ class CartFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: CartViewModel by viewModels()
     private lateinit var adapter: CartItemAdapter
+    private lateinit var shimmerAdapter: CartShimmerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,13 +60,10 @@ class CartFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        // Set title
         binding.customAppBar.tvTitle.text = "Cart"
         
-        // Hide back button
         binding.customAppBar.btnBack.visibility = View.GONE
         
-        // Hide custom content area since we're not using it
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
 
@@ -78,7 +76,6 @@ class CartFragment : Fragment() {
                 viewModel.removeFromCart(productId)
             },
             onItemClick = { productId ->
-                // Navigate to product detail
                 findNavController().navigate(
                     CartFragmentDirections.actionCartFragmentToProductDetailFragment(
                         productId.toInt()
@@ -86,6 +83,8 @@ class CartFragment : Fragment() {
                 )
             }
         )
+        
+        shimmerAdapter = CartShimmerAdapter()
         
         binding.rvCartItems.adapter = adapter
         binding.rvCartItems.layoutManager = LinearLayoutManager(requireContext())
@@ -104,13 +103,10 @@ class CartFragment : Fragment() {
             viewModel.uiState.collect { uiState ->
                 _binding?.let { binding ->
                     if (uiState.isLoading) {
-                        // Show loading state
                         binding.rvCartItems.visibility = View.GONE
                     } else if (uiState.error != null) {
-                        // Show error state
                         binding.rvCartItems.visibility = View.GONE
                     } else {
-                        // Update cart items
                         updateCartUI(uiState, binding)
                     }
                 }
@@ -121,13 +117,15 @@ class CartFragment : Fragment() {
     private fun updateCartUI(uiState: CartUIState, binding: FragmentCartBinding) {
         binding.tvTotal.text = "${uiState.totalPrice} ₺"
         
-        if (uiState.cartItems.isEmpty()) {
-            // Show empty cart state
+        if (uiState.isLoading) {
+            binding.rvCartItems.adapter = shimmerAdapter
+            shimmerAdapter.setShimmerCount(5)
+        } else if (uiState.cartItems.isEmpty()) {
             binding.rvCartItems.visibility = View.GONE
             binding.btnComplete.isEnabled = false
         } else {
-            // Show cart items
             binding.rvCartItems.visibility = View.VISIBLE
+            binding.rvCartItems.adapter = adapter
             binding.btnComplete.isEnabled = true
             adapter.submitList(uiState.cartItems)
         }

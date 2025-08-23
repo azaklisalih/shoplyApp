@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -20,12 +19,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cartapp.R
 import com.example.cartapp.databinding.FragmentHomeBinding
+import com.example.cartapp.presentation.ui_state.HomeUIState
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Button
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -52,13 +49,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        // Set title
         binding.customAppBar.tvTitle.text = "E-Market"
         
-        // Hide back button
         binding.customAppBar.btnBack.visibility = View.GONE
         
-        // Setup clear filters button
         binding.customAppBar.btnRightAction.apply {
             visibility = View.VISIBLE
             setImageResource(R.drawable.ic_clear_filter)
@@ -67,9 +61,9 @@ class HomeFragment : Fragment() {
             }
         }
         
-        // Hide custom content area since we're not using it
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
+
 
     private fun setupClickOutsideToHideKeyboard() {
         binding.root.setOnClickListener {
@@ -122,7 +116,6 @@ class HomeFragment : Fragment() {
         binding.rvProducts.adapter = adapter
         binding.rvProducts.layoutManager = GridLayoutManager(requireContext(), 2)
         
-        // Add scroll listener for infinite scroll
         binding.rvProducts.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -142,13 +135,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun setListeners() {
-        // Search functionality
         binding.etSearch.doAfterTextChanged {
             if (!binding.etSearch.hasFocus()) return@doAfterTextChanged
             viewModel.searchProducts(it.toString())
         }
 
-        // Filter button
         binding.btnFilter.setOnClickListener {
             val navOptions = androidx.navigation.NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_in_bottom)
@@ -185,21 +176,14 @@ class HomeFragment : Fragment() {
                         adapter.setLoading(false)
                         adapter.setLoadingMore(state.isLoadingMore)
                         adapter.submitProducts(state.products)
+                        adapter.updateFavoriteStates(state.favoriteStates)
                         binding.errorLayout.visibility = View.GONE
                         binding.rvProducts.visibility = View.VISIBLE
                     }
                 }
             }
         }
-        
-        // Observe favorite states
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.favoriteStates.collect { favoriteStates ->
-                    adapter.updateFavoriteStates(favoriteStates)
-                }
-            }
-        }
+
     }
 
     override fun onDestroyView() {

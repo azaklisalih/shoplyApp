@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.cartapp.databinding.FragmentProductDetailBinding
+import com.example.cartapp.presentation.ui_state.ProductDetailUIState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import com.example.cartapp.R
@@ -45,19 +46,15 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun setupCustomAppBar() {
-        // Set title
         binding.customAppBar.tvTitle.text = "Product Detail"
         
-        // Show back button
         binding.customAppBar.btnBack.visibility = View.VISIBLE
         binding.customAppBar.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
         
-        // Hide right action button
         binding.customAppBar.btnRightAction.visibility = View.GONE
         
-        // Hide custom content area
         binding.customAppBar.customContentArea.visibility = View.GONE
     }
 
@@ -77,12 +74,10 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        // Add to cart button
         binding.btnAddToCart.setOnClickListener {
             viewModel.addToCart()
         }
 
-        // Favorite button
         binding.ivFavorite.setOnClickListener {
             viewModel.toggleFavorite()
         }
@@ -93,22 +88,18 @@ class ProductDetailFragment : Fragment() {
             viewModel.uiState.collect { uiState ->
                 _binding?.let { binding ->
                     if (uiState.isLoading) {
-                        // Show loading state
                         binding.productImageCard.visibility = View.GONE
-                        binding.productInfoCard.visibility = View.GONE
-                        binding.priceCard.visibility = View.GONE
+                        binding.lyProductInfo.visibility = View.GONE
+                        binding.lyPriceAndAddToCart.visibility = View.GONE
                     } else if (uiState.error != null) {
-                        // Show error state
                         binding.productImageCard.visibility = View.GONE
-                        binding.productInfoCard.visibility = View.GONE
-                        binding.priceCard.visibility = View.GONE
+                        binding.lyProductInfo.visibility = View.GONE
+                        binding.lyPriceAndAddToCart.visibility = View.GONE
                     } else {
-                        // Update product data
                         uiState.product?.let { product ->
                             updateProductUI(product, binding)
                         }
                         
-                        // Update favorite status
                         updateFavoriteUI(uiState.isFavorite, binding)
                     }
                 }
@@ -121,20 +112,16 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun updateProductUI(product: com.example.cartapp.domain.model.Product, binding: FragmentProductDetailBinding) {
-        // Update AppBar title
         binding.customAppBar.tvTitle.text = product.name
         
-        // Update product info
         binding.tvProductName.text = product.name
         binding.tvProductDescription.text = product.description
         
-        // Update price
         binding.tvPrice.text = "${product.price} ₺"
         
-        // Show all sections
         binding.productImageCard.visibility = View.VISIBLE
-        binding.productInfoCard.visibility = View.VISIBLE
-        binding.priceCard.visibility = View.VISIBLE
+        binding.lyProductInfo.visibility = View.VISIBLE
+        binding.lyPriceAndAddToCart.visibility = View.VISIBLE
     }
 
     private fun updateFavoriteUI(isFavorite: Boolean, binding: FragmentProductDetailBinding) {

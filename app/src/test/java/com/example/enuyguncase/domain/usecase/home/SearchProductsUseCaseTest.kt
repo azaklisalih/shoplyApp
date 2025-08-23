@@ -1,10 +1,7 @@
 package com.example.cartapp.domain.usecase.home
 
-import com.example.cartapp.data.home.remote.dto.DimensionsDto
-import com.example.cartapp.data.home.remote.dto.MetaDto
 import com.example.cartapp.data.home.remote.dto.ProductDto
-import com.example.cartapp.data.home.remote.dto.ProductsResponse
-import com.example.cartapp.domain.model.ProductPage
+import com.example.cartapp.domain.model.Product
 import com.example.cartapp.domain.repository.ProductRepository
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -30,78 +27,63 @@ class SearchProductsUseCaseTest {
     }
 
     @Test
-    fun `invoke should return ProductPage with search results`() = runTest {
+    fun `invoke should return products when repository returns search results`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = listOf(
-                ProductDto(
-                    id = 1,
-                    title = "iPhone Search Result",
-                    description = "iPhone description",
-                    category = "electronics",
-                    price = 999.99,
-                    discountPercentage = 5.0,
-                    rating = 4.8,
-                    stock = 10,
-                    tags = listOf("electronics", "phone"),
-                    brand = "Apple",
-                    sku = "IPHONE-001",
-                    weight = 200,
-                    dimensions = DimensionsDto(7.0, 3.5, 0.8),
-                    warrantyInformation = "1 year warranty",
-                    shippingInformation = "Free shipping",
-                    availabilityStatus = "In Stock",
-                    reviews = emptyList(),
-                    returnPolicy = "30 days return",
-                    minimumOrderQuantity = 1,
-                    meta = MetaDto("2024-01-01", "2024-01-01", "123456789", "QR123"),
-                    thumbnail = "https://example.com/iphone.jpg",
-                    images = listOf("https://example.com/iphone1.jpg")
-                )
+        val mockProducts = listOf(
+            Product(
+                id = "1",
+                name = "Test Product 1",
+                image = "image1.jpg",
+                price = "99.99",
+                description = "Description 1",
+                model = "Model 1",
+                brand = "Brand 1",
+                createdAt = "2024-01-01"
             ),
-            total = 1,
-            skip = 0,
-            limit = 10
+            Product(
+                id = "2",
+                name = "Test Product 2",
+                image = "image2.jpg",
+                price = "49.99",
+                description = "Description 2",
+                model = "Model 2",
+                brand = "Brand 2",
+                createdAt = "2024-01-02"
+            )
         )
 
-        whenever(mockRepository.searchProductsFlow("iPhone"))
-            .thenReturn(flowOf(mockProductsResponse))
+        whenever(mockRepository.searchProductsFlow("test"))
+            .thenReturn(flowOf(mockProducts))
 
         // When
-        val result = searchProductsUseCase("iPhone")
+        val result = searchProductsUseCase("test")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(1, productPage.products.size)
-            assertEquals(1, productPage.total)
-            assertEquals(1, productPage.products[0].id)
-            assertEquals("iPhone Search Result", productPage.products[0].title)
-            assertEquals("Apple", productPage.products[0].brand)
+        result.collect { products ->
+            assertEquals(2, products.size)
+            assertEquals("1", products[0].id)
+            assertEquals("Test Product 1", products[0].name)
+            assertEquals("2", products[1].id)
+            assertEquals("Test Product 2", products[1].name)
         }
 
-        verify(mockRepository).searchProductsFlow("iPhone")
+        verify(mockRepository).searchProductsFlow("test")
     }
 
     @Test
-    fun `invoke should return empty ProductPage when no search results found`() = runTest {
+    fun `invoke should return empty list when no search results found`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = emptyList(),
-            total = 0,
-            skip = 0,
-            limit = 10
-        )
+        val mockProducts = emptyList<Product>()
 
         whenever(mockRepository.searchProductsFlow("nonexistent"))
-            .thenReturn(flowOf(mockProductsResponse))
+            .thenReturn(flowOf(mockProducts))
 
         // When
         val result = searchProductsUseCase("nonexistent")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(0, productPage.products.size)
-            assertEquals(0, productPage.total)
+        result.collect { products ->
+            assertEquals(0, products.size)
         }
 
         verify(mockRepository).searchProductsFlow("nonexistent")
@@ -110,49 +92,19 @@ class SearchProductsUseCaseTest {
     @Test
     fun `invoke should handle empty search query`() = runTest {
         // Given
-        val mockProductsResponse = ProductsResponse(
-            products = emptyList(),
-            total = 0,
-            skip = 0,
-            limit = 10
-        )
+        val mockProducts = emptyList<Product>()
 
         whenever(mockRepository.searchProductsFlow(""))
-            .thenReturn(flowOf(mockProductsResponse))
+            .thenReturn(flowOf(mockProducts))
 
         // When
         val result = searchProductsUseCase("")
 
         // Then
-        result.collect { productPage ->
-            assertEquals(0, productPage.products.size)
-            assertEquals(0, productPage.total)
+        result.collect { products ->
+            assertEquals(0, products.size)
         }
 
         verify(mockRepository).searchProductsFlow("")
-    }
-
-    @Test
-    fun `invoke should handle special characters in search query`() = runTest {
-        // Given
-        val mockProductsResponse = ProductsResponse(
-            products = emptyList(),
-            total = 0,
-            skip = 0,
-            limit = 10
-        )
-
-        whenever(mockRepository.searchProductsFlow("test@#$%"))
-            .thenReturn(flowOf(mockProductsResponse))
-
-        // When
-        val result = searchProductsUseCase("test@#$%")
-
-        // Then
-        result.collect { productPage ->
-            assertEquals(0, productPage.products.size)
-        }
-
-        verify(mockRepository).searchProductsFlow("test@#$%")
     }
 } 

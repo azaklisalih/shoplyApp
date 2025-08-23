@@ -2,9 +2,9 @@ package com.example.cartapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.cartapp.data.home.local.AppDatabase
-import com.example.cartapp.data.home.local.dao.CartDao
-import com.example.cartapp.data.home.local.dao.FavoriteDao
+import com.example.cartapp.data.local.AppDatabase
+import com.example.cartapp.data.cart.local.dao.CartDao
+import com.example.cartapp.data.favorite.local.dao.FavoriteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

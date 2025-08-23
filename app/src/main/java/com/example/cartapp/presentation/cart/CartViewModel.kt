@@ -6,6 +6,7 @@ import com.example.cartapp.domain.model.CartItem
 import com.example.cartapp.domain.usecase.cart.GetCartItemsUseCase
 import com.example.cartapp.domain.usecase.cart.RemoveFromCartUseCase
 import com.example.cartapp.domain.usecase.cart.UpdateCartItemQuantityUseCase
+import com.example.cartapp.presentation.ui_state.CartUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,13 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class CartUIState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val cartItems: List<CartItem> = emptyList(),
-    val totalPrice: Double = 0.0
-)
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
