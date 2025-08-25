@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.cartapp.presentation.ui_state.SettingsUIState
-import com.example.cartapp.util.LocaleHelper
+import com.example.cartapp.util.AppLocaleManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +21,7 @@ class SettingsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SettingsUIState())
     val uiState: StateFlow<SettingsUIState> = _uiState.asStateFlow()
     
-    private val _currentLanguage = MutableLiveData<String>(LocaleHelper.getLanguage(context))
+    private val _currentLanguage = MutableLiveData<String>(AppLocaleManager.getCurrentLanguageTag())
     val currentLanguage: LiveData<String> = _currentLanguage
     
     init {
@@ -29,13 +29,13 @@ class SettingsViewModel @Inject constructor(
     }
     
     private fun loadCurrentLanguage() {
-        _currentLanguage.value = LocaleHelper.getLanguage(context)
+        _currentLanguage.value = AppLocaleManager.getCurrentLanguageTag()
     }
     
     fun setLanguage(language: String): Boolean {
         if (_currentLanguage.value != language) {
             _currentLanguage.value = language
-            LocaleHelper.setLocale(context, language)
+            AppLocaleManager.setLocale(context, language)
             _uiState.value = _uiState.value.copy(currentLanguage = language)
             return true
         }

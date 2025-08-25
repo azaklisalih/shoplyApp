@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
@@ -46,9 +48,29 @@ class HomeViewModel @Inject constructor(
 
     private var originalProducts: List<Product> = emptyList()
 
+    private val favoriteIdsFlow: StateFlow<Set<String>> =
+        observeFavoriteIdsUseCase()
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+
     init {
         fetchProducts()
         loadFilterData()
+        observeFavorites()
+
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            favoriteIdsFlow.collect { favIds ->
+                _uiState.update { st ->
+                    if (st.products.isEmpty()) st
+                    else st.copy(
+                        favoriteStates = st.products.associate { it.id to favIds.contains(it.id) }
+                    )
+                }
+            }
+        }
     }
 
     fun fetchProducts() {
@@ -76,10 +98,7 @@ class HomeViewModel @Inject constructor(
                     brand = selectedBrand,
                     model = selectedModel
                 )
-                    .combine(observeFavoriteIdsUseCase().distinctUntilChanged()) { products, favIds ->
-                        val favMap = products.associate { p -> p.id to favIds.contains(p.id) }
-                        products to favMap
-                    }
+
                     .onStart { delay(500) }
                     .catch { e ->
                         _uiState.update {
@@ -90,8 +109,10 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                     }
-                    .collect { (products, favMap) ->
+                    .collect { products ->
                         originalProducts = products
+                        val favMap =
+                            products.associate { it.id to favoriteIdsFlow.value.contains(it.id) }
                         _uiState.update {
                             it.copy(
                                 products = products,

@@ -11,7 +11,7 @@ import com.example.cartapp.presentation.common.navigation.NavigationRouter
 import com.example.cartapp.presentation.common.CartBadgeManager
 import com.example.cartapp.presentation.common.ReselectCallback
 import com.example.cartapp.presentation.common.StatusBarManager
-import com.example.cartapp.util.LocaleHelper
+import com.example.cartapp.util.AppLocaleManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -31,9 +31,8 @@ class MainActivity : AppCompatActivity() {
     private var currentReselectCallback: ReselectCallback? = null
 
     override fun attachBaseContext(newBase: Context) {
-        val savedLanguage = LocaleHelper.getLanguage(newBase)
-        val context = LocaleHelper.setLocale(newBase, savedLanguage)
-        super.attachBaseContext(context)
+        AppLocaleManager.applySavedLocale(newBase)
+        super.attachBaseContext(newBase)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

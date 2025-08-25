@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,9 +32,29 @@ class FavoriteViewModel @Inject constructor(
     
     private val _uiState = MutableStateFlow(FavoriteUIState())
     val uiState: StateFlow<FavoriteUIState> = _uiState.asStateFlow()
+
+    private val favoritesFlow: StateFlow<List<Favorite>> =
+        getFavoritesUseCase()
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     
     init {
         loadFavorites()
+        observeFavorites()
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            favoritesFlow.collect { favs ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        favorites = favs,
+                        error = null
+                    )
+                }
+            }
+        }
     }
     
     private fun loadFavorites() {
@@ -60,18 +83,18 @@ class FavoriteViewModel @Inject constructor(
     
     fun removeFromFavorites(productId: String) {
         viewModelScope.launch {
-            try {
-                removeFromFavoritesUseCase(productId)
+            val prev = _uiState.value.favorites
+            _uiState.update { it.copy(favorites = prev.filterNot { f -> f.productId == productId }) }
 
-                val updatedFavorites = getFavoritesUseCase().first()
-                _uiState.update { 
+            runCatching {
+                removeFromFavoritesUseCase(productId)
+            }.onFailure { e ->
+                _uiState.update {
                     it.copy(
-                        favorites = updatedFavorites,
-                        error = null
+                        favorites = prev,
+                        error = e.message ?: ErrorMessage.FAILED_REMOVE_FAVORITES.key
                     )
                 }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_REMOVE_FAVORITES.key) }
             }
         }
     }
