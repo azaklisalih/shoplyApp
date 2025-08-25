@@ -74,14 +74,14 @@ This project follows **Clean Architecture** principles with clear separation of 
 
 Comprehensive test coverage across all layers:
 
-### Current Test Coverage: **75+ Tests** ✅
+### Current Test Coverage: **89 Tests** ✅
 
 #### ✅ **Data Layer Tests (16 tests)**
 - `ProductMapperTest` - DTO to Domain mapping
 - `CartMapperTest` - Entity to Domain mapping  
 - `FavoriteMapperTest` - Entity to Domain mapping
 
-#### ✅ **Domain Layer Tests (59+ tests)**
+#### ✅ **Domain Layer Tests (59 tests)**
 - **Product Use Cases**:
   - `GetProductsUseCaseTest` (8 tests)
   - `SearchProductsUseCaseTest` (6 tests)
@@ -95,9 +95,15 @@ Comprehensive test coverage across all layers:
   - `CheckFavoriteUseCaseTest` (6 tests)
   - `RemoveFavoriteUseCaseTest` (6 tests)
 
-#### ✅ **Presentation Layer Tests**
-- `HomeViewModelTest` - ViewModel state management
-- Additional ViewModel tests for other features
+#### ✅ **Presentation Layer Tests (14 tests)**
+- `HomeViewModelTest` - ViewModel state management (8 tests)
+- `SettingsViewModelTest` - Settings functionality (4 tests)
+- `ProductDetailViewModelTest` - Product detail functionality (4 tests)
+- `CheckoutViewModelTest` - Checkout functionality (3 tests)
+- `CartViewModelTest` - Cart management (3 tests)
+- `FavoriteViewModelTest` - Favorites management (3 tests)
+- `ProfileViewModelTest` - Profile functionality (2 tests)
+- `OrderSuccessViewModelTest` - Order success handling (3 tests)
 
 ### Test Categories
 

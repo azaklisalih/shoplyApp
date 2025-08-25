@@ -51,7 +51,6 @@ class CartViewModelTest {
         viewModel = CartViewModel(
             mockGetCartItems,
             mockUpdateCartItemQuantity,
-            mockRemoveFromCart,
             mockClearCart
         )
     }

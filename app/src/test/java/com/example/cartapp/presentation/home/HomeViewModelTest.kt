@@ -163,7 +163,7 @@ class HomeViewModelTest {
         val emptyQuery = ""
 
         // When
-        viewModel.searchProducts(emptyQuery)
+        viewModel.performSearch(emptyQuery)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
@@ -190,13 +190,12 @@ class HomeViewModelTest {
         whenever(mockSearchProducts.invoke(searchQuery)).thenReturn(flowOf(mockSearchResults))
 
         // When
-        viewModel.searchProducts(searchQuery)
+        viewModel.performSearch(searchQuery)
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Then
         // Note: searchProducts now uses localSearch when filters are active
         // This test may need to be updated based on current filter state
-    }
     }
 
     @Test
