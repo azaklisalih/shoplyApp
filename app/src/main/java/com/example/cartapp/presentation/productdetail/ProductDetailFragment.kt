@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.cartapp.databinding.FragmentProductDetailBinding
@@ -83,25 +85,27 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
-                _binding?.let { binding ->
-                    if (uiState.isLoading) {
-                        binding.productImageCard.visibility = View.GONE
-                        binding.lyProductInfo.visibility = View.GONE
-                        binding.lyPriceAndAddToCart.visibility = View.GONE
-                    } else if (uiState.error != null) {
-                        binding.productImageCard.visibility = View.GONE
-                        binding.lyProductInfo.visibility = View.GONE
-                        binding.lyPriceAndAddToCart.visibility = View.GONE
-                    } else {
-                        uiState.product?.let { product ->
-                            updateProductUI(product, binding)
-                        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+                    _binding?.let { binding ->
+                        if (uiState.isLoading) {
+                            binding.productImageCard.visibility = View.GONE
+                            binding.lyProductInfo.visibility = View.GONE
+                            binding.lyPriceAndAddToCart.visibility = View.GONE
+                        } else if (uiState.error != null) {
+                            binding.productImageCard.visibility = View.GONE
+                            binding.lyProductInfo.visibility = View.GONE
+                            binding.lyPriceAndAddToCart.visibility = View.GONE
+                        } else {
+                            uiState.product?.let { product ->
+                                updateProductUI(product, binding)
+                            }
 
-                        updateFavoriteUI(uiState.isFavorite, binding)
-                        updateCartUI(uiState.isInCart, binding)
-                        updateAnimationUI(uiState.showSuccessAnimation, binding)
+                            updateFavoriteUI(uiState.isFavorite, binding)
+                            updateCartUI(binding)
+                            updateAnimationUI(uiState.showSuccessAnimation, binding)
+                        }
                     }
                 }
             }
@@ -136,7 +140,7 @@ class ProductDetailFragment : Fragment() {
         }
     }
 
-    private fun updateCartUI(isInCart: Boolean, binding: FragmentProductDetailBinding) {
+    private fun updateCartUI(binding: FragmentProductDetailBinding) {
         binding.btnAddToCart.text = getString(R.string.common_add_to_cart)
         binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
     }

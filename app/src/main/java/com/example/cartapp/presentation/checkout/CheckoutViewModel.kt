@@ -2,8 +2,8 @@ package com.example.cartapp.presentation.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.R
 import com.example.cartapp.domain.repository.ProductRepository
+import com.example.cartapp.domain.model.ErrorMessage
 import com.example.cartapp.presentation.ui_state.CheckoutUIState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +60,7 @@ class CheckoutViewModel @Inject constructor(
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: R.string.error_failed_place_order.toString()
+                        error = e.message ?: ErrorMessage.FAILED_PLACE_ORDER.key
                     )
                 }
             }

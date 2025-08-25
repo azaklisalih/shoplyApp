@@ -2,7 +2,6 @@ package com.example.cartapp.presentation.productdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +16,7 @@ import com.example.cartapp.domain.usecase.favorite.AddToFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.IsFavoriteUseCase
 import com.example.cartapp.domain.usecase.cart.GetCartItemsUseCase
+import com.example.cartapp.domain.model.ErrorMessage
 import com.example.cartapp.presentation.ui_state.ProductDetailUIState
 
 @HiltViewModel
@@ -52,7 +52,7 @@ class ProductDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: R.string.error_unknown.toString()
+                        error = e.message ?: ErrorMessage.UNKNOWN.key
                     )
                 }
             }
@@ -85,20 +85,7 @@ class ProductDetailViewModel @Inject constructor(
                     _uiState.update { it.copy(isInCart = true) }
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
-            }
-        }
-    }
-    
-    fun removeFromCart() {
-        viewModelScope.launch {
-            try {
-                val product = _uiState.value.product
-                if (product != null) {
-                    _uiState.update { it.copy(isInCart = false) }
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_cart.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_ADD_CART.key) }
             }
         }
     }
@@ -118,7 +105,7 @@ class ProductDetailViewModel @Inject constructor(
                     _uiState.update { it.copy(showSuccessAnimation = false) }
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_ADD_CART.key) }
             }
         }
     }
@@ -139,7 +126,7 @@ class ProductDetailViewModel @Inject constructor(
                     _uiState.update { it.copy(isFavorite = !currentState) }
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_toggle_favorite.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_TOGGLE_FAVORITE.key) }
             }
         }
     }

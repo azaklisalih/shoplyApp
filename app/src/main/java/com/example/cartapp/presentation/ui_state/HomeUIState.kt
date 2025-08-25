@@ -1,12 +1,14 @@
 package com.example.cartapp.presentation.ui_state
 
 import com.example.cartapp.domain.model.Product
+import com.example.cartapp.domain.model.ErrorType
 
 data class HomeUIState(
     val products: List<Product> = emptyList(),
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: String? = null,
+    val errorType: ErrorType = ErrorType.None,
     val total: Int = 0,
     val page: Int = 0,
     val pageSize: Int = 20,
@@ -26,5 +28,7 @@ data class HomeUIState(
     val filterError: String? = null,
     val brandModelMap: Map<String, List<String>> = emptyMap(),
     val animatedCartProductId: String? = null,
-    val animatedFavoriteProductId: String? = null
+    val animatedFavoriteProductId: String? = null,
+    val isLocalSearchActive: Boolean = false,
+    val localSearchQuery: String = ""
 ) 

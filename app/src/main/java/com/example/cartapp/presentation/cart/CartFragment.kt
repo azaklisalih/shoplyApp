@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.app.AlertDialog
@@ -89,11 +91,12 @@ class CartFragment : Fragment() {
                 viewModel.removeFromCart(productId)
             },
             onItemClick = { productId ->
-                findNavController().navigate(
-                    CartFragmentDirections.actionCartFragmentToProductDetailFragment(
-                        productId.toInt()
+                val productIdInt = productId.toIntOrNull()
+                if (productIdInt != null) {
+                    findNavController().navigate(
+                        CartFragmentDirections.actionCartFragmentToProductDetailFragment(productIdInt)
                     )
-                )
+                }
             }
         )
         
@@ -123,15 +126,17 @@ class CartFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
-                _binding?.let { binding ->
-                    if (uiState.isLoading) {
-                        binding.rvCartItems.visibility = View.GONE
-                    } else if (uiState.error != null) {
-                        binding.rvCartItems.visibility = View.GONE
-                    } else {
-                        updateCartUI(uiState, binding)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { uiState ->
+                    _binding?.let { binding ->
+                        if (uiState.isLoading) {
+                            binding.rvCartItems.visibility = View.GONE
+                        } else if (uiState.error != null) {
+                            binding.rvCartItems.visibility = View.GONE
+                        } else {
+                            updateCartUI(uiState, binding)
+                        }
                     }
                 }
             }

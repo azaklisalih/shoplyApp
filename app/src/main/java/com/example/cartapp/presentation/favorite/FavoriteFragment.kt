@@ -57,11 +57,12 @@ class FavoriteFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = FavoriteItemAdapter(
             onItemClick = { favorite ->
-                findNavController().navigate(
-                    FavoriteFragmentDirections.actionFavoriteFragmentToProductDetailFragment(
-                        favorite.productId.toInt()
+                val productIdInt = favorite.productId.toIntOrNull()
+                if (productIdInt != null) {
+                    findNavController().navigate(
+                        FavoriteFragmentDirections.actionFavoriteFragmentToProductDetailFragment(productIdInt)
                     )
-                )
+                }
             },
             onAddToCart = { favorite ->
                 viewModel.addToCart(favorite)

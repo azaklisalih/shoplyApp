@@ -2,8 +2,8 @@ package com.example.cartapp.presentation.favorite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.R
 import com.example.cartapp.domain.model.Favorite
+import com.example.cartapp.domain.model.ErrorMessage
 import com.example.cartapp.domain.usecase.favorite.GetFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.ConvertFavoriteToProductUseCase
@@ -51,7 +51,7 @@ class FavoriteViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: R.string.error_unknown.toString()
+                        error = e.message ?: ErrorMessage.UNKNOWN.key
                     )
                 }
             }
@@ -71,12 +71,12 @@ class FavoriteViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_favorites.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_REMOVE_FAVORITES.key) }
             }
         }
     }
     
-    fun addToCart(favorite: com.example.cartapp.domain.model.Favorite) {
+    fun addToCart(favorite: Favorite) {
         viewModelScope.launch {
             try {
                 val product = convertFavoriteToProduct(favorite)
@@ -88,7 +88,7 @@ class FavoriteViewModel @Inject constructor(
                 _uiState.update { it.copy(animatedCartProductId = null) }
                 
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_add_cart.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_ADD_CART.key) }
             }
         }
     }

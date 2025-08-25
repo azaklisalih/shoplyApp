@@ -21,8 +21,11 @@ import com.example.cartapp.R
 import com.example.cartapp.MainActivity
 import com.example.cartapp.databinding.FragmentHomeBinding
 import com.example.cartapp.presentation.common.ReselectCallback
+import com.example.cartapp.domain.model.ErrorType
 
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -31,6 +34,8 @@ class HomeFragment : Fragment(), ReselectCallback {
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by activityViewModels()
     private lateinit var adapter: ProductListAdapter
+    
+    private var searchJob: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = FragmentHomeBinding.inflate(inflater, container, false).also {
         _binding = it
@@ -79,6 +84,9 @@ class HomeFragment : Fragment(), ReselectCallback {
         binding.rvProducts.setOnClickListener {
             hideKeyboard()
         }
+        binding.etSearch.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) hideKeyboard()
+        }
     }
 
     private fun hideKeyboard() {
@@ -91,24 +99,26 @@ class HomeFragment : Fragment(), ReselectCallback {
     }
 
     private fun setupWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+        val initialTop = binding.root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            
-            binding.root.setPadding(
-                binding.root.paddingLeft,
-                insets.top,
-                binding.root.paddingRight,
-                binding.root.paddingBottom
+            v.setPadding(
+                v.paddingLeft,
+                initialTop + insets.top,
+                v.paddingRight,
+                v.paddingBottom
             )
-            
-            WindowInsetsCompat.CONSUMED
+            windowInsets
         }
     }
 
     private fun setAdapters() {
         adapter = ProductListAdapter(
             onItemClick = { product ->
-                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(product.id.toInt()))
+                val productId = product.id.toIntOrNull()
+                if (productId != null) {
+                    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToProductDetailFragment(productId))
+                }
             },
             onAddToCart = { product ->
                 viewModel.addToCart(product)
@@ -116,9 +126,6 @@ class HomeFragment : Fragment(), ReselectCallback {
             onToggleFavorite = { product ->
                 viewModel.toggleFavorite(product)
             },
-            onLoadMore = {
-                viewModel.loadMoreProducts()
-            }
         )
         binding.rvProducts.adapter = adapter
         binding.rvProducts.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -158,9 +165,13 @@ class HomeFragment : Fragment(), ReselectCallback {
     }
 
     private fun setListeners() {
-        binding.etSearch.doAfterTextChanged {
+        binding.etSearch.doAfterTextChanged { text ->
             if (!binding.etSearch.hasFocus()) return@doAfterTextChanged
-            viewModel.searchProducts(it.toString())
+            searchJob?.cancel()
+            searchJob = viewLifecycleOwner.lifecycleScope.launch {
+                delay(300)
+                viewModel.performSearch(text?.toString().orEmpty())
+            }
         }
 
         binding.btnFilter.setOnClickListener {
@@ -175,10 +186,6 @@ class HomeFragment : Fragment(), ReselectCallback {
                 HomeFragmentDirections.actionHomeFragmentToFilterFragment(),
                 navOptions
             )
-        }
-
-        binding.btnRetry.setOnClickListener {
-            viewModel.fetchProducts()
         }
     }
 
@@ -195,6 +202,23 @@ class HomeFragment : Fragment(), ReselectCallback {
                         binding.errorLayout.visibility = View.VISIBLE
                         binding.rvProducts.visibility = View.GONE
                         binding.tvError.text = state.error
+                        
+                        // ErrorType'a göre UI kontrolü
+                        when (state.errorType) {
+                            is ErrorType.NetworkError, is ErrorType.ServerError -> {
+                                binding.btnRetry.visibility = View.VISIBLE
+                                binding.btnRetry.setOnClickListener {
+                                    viewModel.fetchProducts()
+                                }
+                            }
+                            is ErrorType.FailedAddCart, is ErrorType.FailedToggleFavorite -> {
+                                binding.btnRetry.visibility = View.GONE
+                                // Toast göster veya başka UI feedback
+                            }
+                            else -> {
+                                binding.btnRetry.visibility = View.GONE
+                            }
+                        }
                     } else {
                         adapter.setLoading(false)
                         adapter.setLoadingMore(state.isLoadingMore)
@@ -203,6 +227,7 @@ class HomeFragment : Fragment(), ReselectCallback {
                         adapter.updateAnimationStates(state.animatedCartProductId, state.animatedFavoriteProductId)
                         binding.errorLayout.visibility = View.GONE
                         binding.rvProducts.visibility = View.VISIBLE
+                        binding.btnRetry.visibility = View.GONE
                     }
                 }
             }
@@ -213,6 +238,8 @@ class HomeFragment : Fragment(), ReselectCallback {
     override fun onDestroyView() {
         super.onDestroyView()
         (activity as? MainActivity)?.setReselectCallback(null)
+        binding.rvProducts.clearOnScrollListeners()
+        searchJob?.cancel()
         _binding = null
     }
 }

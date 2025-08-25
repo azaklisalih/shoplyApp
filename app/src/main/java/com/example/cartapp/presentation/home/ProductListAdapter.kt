@@ -14,7 +14,6 @@ class ProductListAdapter(
     private val onItemClick: (Product) -> Unit,
     private val onAddToCart: (Product) -> Unit,
     private val onToggleFavorite: (Product) -> Unit,
-    private val onLoadMore: () -> Unit = {}
 ) : ListAdapter<Any, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     private var isLoading = false
@@ -143,7 +142,7 @@ class ProductListAdapter(
                     .start()
             } else {
                 binding.btnAddToCart.text = binding.root.context.getString(R.string.common_add_to_cart)
-                binding.btnAddToCart.setBackgroundResource(com.example.cartapp.R.drawable.add_to_cart_button)
+                binding.btnAddToCart.setBackgroundResource(R.drawable.add_to_cart_button)
                 binding.btnAddToCart.setTextColor(android.graphics.Color.WHITE)
             }
         }
@@ -167,7 +166,7 @@ class ProductListAdapter(
     }
 
     inner class ShimmerViewHolder(
-        private val binding: ItemProductShimmerBinding
+        binding: ItemProductShimmerBinding
     ) : RecyclerView.ViewHolder(binding.root)
 
     private data class ShimmerItem(val id: Int = 0)

@@ -98,14 +98,11 @@ class ProductRepositoryImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun addToCart(product: Product, quantity: Int) {
-        // Check if item already exists in cart
         val existingItem = cartDao.getItemByProductId(product.id)
         
         if (existingItem != null) {
-            // Item exists, increase quantity
             cartDao.increaseQuantity(product.id)
         } else {
-            // Item doesn't exist, add new item
             val cartItem = CartItem(
                 productId = product.id,
                 name = product.name,

@@ -2,11 +2,9 @@ package com.example.cartapp.presentation.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.R
 import com.example.cartapp.domain.model.CartItem
-import com.example.cartapp.domain.repository.ProductRepository
+import com.example.cartapp.domain.model.ErrorMessage
 import com.example.cartapp.domain.usecase.cart.GetCartItemsUseCase
-import com.example.cartapp.domain.usecase.cart.RemoveFromCartUseCase
 import com.example.cartapp.domain.usecase.cart.UpdateCartItemQuantityUseCase
 import com.example.cartapp.domain.usecase.cart.ClearCartUseCase
 import com.example.cartapp.presentation.ui_state.CartUIState
@@ -20,10 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val getCartItems: GetCartItemsUseCase,
-    private val updateCartItemQuantity: UpdateCartItemQuantityUseCase,
-    private val removeFromCart: RemoveFromCartUseCase,
-    private val clearCart: ClearCartUseCase
+    private val getCartItemsUseCase: GetCartItemsUseCase,
+    private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
+    private val clearCartUseCase: ClearCartUseCase
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(CartUIState())
@@ -38,7 +35,7 @@ class CartViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, error = null) }
             
             try {
-                getCartItems().collect { cartItems ->
+                getCartItemsUseCase().collect { cartItems ->
                     val totalPrice = calculateTotalPrice(cartItems)
                     _uiState.update { 
                         it.copy(
@@ -52,7 +49,7 @@ class CartViewModel @Inject constructor(
                 _uiState.update { 
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: R.string.error_unknown.toString()
+                        error = e.message ?: ErrorMessage.UNKNOWN.key
                     )
                 }
             }
@@ -66,9 +63,9 @@ class CartViewModel @Inject constructor(
     fun updateQuantity(productId: String, newQuantity: Int) {
         viewModelScope.launch {
             try {
-                updateCartItemQuantity(productId, newQuantity)
+                updateCartItemQuantityUseCase(productId, newQuantity)
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_update_quantity.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_UPDATE_QUANTITY.key) }
             }
         }
     }
@@ -78,7 +75,7 @@ class CartViewModel @Inject constructor(
             try {
                 removeFromCart(productId)
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_remove_cart.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_REMOVE_CART.key) }
             }
         }
     }
@@ -86,9 +83,9 @@ class CartViewModel @Inject constructor(
     fun clearCart() {
         viewModelScope.launch {
             try {
-                clearCart()
+                clearCartUseCase.invoke()
             } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message ?: R.string.error_failed_clear_cart.toString()) }
+                _uiState.update { it.copy(error = e.message ?: ErrorMessage.FAILED_CLEAR_CART.key) }
             }
         }
     }

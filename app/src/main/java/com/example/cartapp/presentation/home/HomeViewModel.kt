@@ -2,10 +2,12 @@ package com.example.cartapp.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cartapp.R
 import com.example.cartapp.domain.model.Product
+import com.example.cartapp.domain.model.ErrorMessage
+import com.example.cartapp.domain.model.ErrorType
 import com.example.cartapp.domain.usecase.home.GetProductsUseCase
 import com.example.cartapp.domain.usecase.home.SearchProductsUseCase
+import com.example.cartapp.domain.usecase.home.LocalSearchUseCase
 import com.example.cartapp.domain.usecase.cart.AddToCartUseCase
 import com.example.cartapp.domain.usecase.favorite.AddToFavoritesUseCase
 import com.example.cartapp.domain.usecase.favorite.RemoveFromFavoritesUseCase
@@ -17,22 +19,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getProducts: GetProductsUseCase,
-    private val searchProducts: SearchProductsUseCase,
-    private val addToCart: AddToCartUseCase,
-    private val addToFavorites: AddToFavoritesUseCase,
-    private val removeFromFavorites: RemoveFromFavoritesUseCase,
-    private val observeFavoriteIds: ObserveFavoriteIdsUseCase
+    private val getProductsUseCase: GetProductsUseCase,
+    private val searchProductsUseCase: SearchProductsUseCase,
+    private val localSearchUseCase: LocalSearchUseCase,
+    private val addToCartUseCase: AddToCartUseCase,
+    private val addToFavoritesUseCase: AddToFavoritesUseCase,
+    private val removeFromFavoritesUseCase: RemoveFromFavoritesUseCase,
+    private val observeFavoriteIdsUseCase: ObserveFavoriteIdsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUIState(isLoading = true))
@@ -41,44 +44,54 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private var originalProducts: List<Product> = emptyList()
+
     init {
         fetchProducts()
         loadFilterData()
     }
 
-
     fun fetchProducts() {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true, error = null, page = 0) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        error = null,
+                        page = 0,
+                        isLocalSearchActive = false,
+                        localSearchQuery = ""
+                    )
+                }
 
-                val currentState = _uiState.value
+                val st = _uiState.value
+                val selectedBrand = st.selectedBrands.firstOrNull()
+                val selectedModel = st.selectedModels.firstOrNull()
 
-                val selectedBrand = currentState.selectedBrands.firstOrNull()
-                val selectedModel = currentState.selectedModels.firstOrNull()
-
-                getProducts(
-                    limit = currentState.pageSize,
+                getProductsUseCase(
+                    limit = st.pageSize,
                     skip = 0,
-                    sortBy = currentState.selectedSortBy,
-                    order = currentState.selectedSortOrder,
+                    sortBy = st.selectedSortBy,
+                    order = st.selectedSortOrder,
                     brand = selectedBrand,
                     model = selectedModel
                 )
-                    .map { products -> applyLocalFilters(products, currentState) }
-                    .combine(
-                        observeFavoriteIds().distinctUntilChanged()
-                    ) { products, favIds ->
+                    .combine(observeFavoriteIdsUseCase().distinctUntilChanged()) { products, favIds ->
                         val favMap = products.associate { p -> p.id to favIds.contains(p.id) }
                         products to favMap
                     }
-                    .onStart {
-                        delay(500)
-                    }
-                    .catch { exception ->
-                        _uiState.update { it.copy(isLoading = false, error = exception.message) }
+                    .onStart { delay(500) }
+                    .catch { e ->
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = e.message ?: ErrorMessage.UNKNOWN.key,
+                                errorType = ErrorType.NetworkError
+                            )
+                        }
                     }
                     .collect { (products, favMap) ->
+                        originalProducts = products
                         _uiState.update {
                             it.copy(
                                 products = products,
@@ -89,13 +102,77 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                     }
-            } catch (exception: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = exception.message) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: ErrorMessage.UNKNOWN.key,
+                        errorType = ErrorType.UnknownError
+                    )
+                }
             }
         }
     }
 
-    fun searchProducts(query: String) {
+    fun performSearch(query: String) {
+        _searchQuery.value = query
+        val st = _uiState.value
+        if (hasActiveFilters(st)) {
+            performLocalSearch(query)
+        } else {
+            performRemoteSearch(query)
+        }
+    }
+
+    private fun hasActiveFilters(state: HomeUIState): Boolean =
+        state.selectedBrands.isNotEmpty() || state.selectedModels.isNotEmpty()
+
+    private fun performLocalSearch(query: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        error = null,
+                        page = 0,
+                        isLocalSearchActive = query.isNotBlank(),
+                        localSearchQuery = query
+                    )
+                }
+
+                val base = originalProducts
+                val filteredProducts = localSearchUseCase(
+                    products = base,
+                    query = query,
+                    selectedBrands = _uiState.value.selectedBrands,
+                    selectedModels = _uiState.value.selectedModels
+                )
+
+                val favIds = observeFavoriteIdsUseCase().first()
+                val favMap = filteredProducts.associate { p -> p.id to favIds.contains(p.id) }
+
+                _uiState.update {
+                    it.copy(
+                        products = filteredProducts,
+                        favoriteStates = favMap,
+                        isLoading = false,
+                        total = filteredProducts.size,
+                        page = 1
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: ErrorMessage.UNKNOWN.key,
+                        errorType = ErrorType.UnknownError
+                    )
+                }
+            }
+        }
+    }
+
+    private fun performRemoteSearch(query: String) {
         if (query.isBlank()) {
             fetchProducts()
             return
@@ -103,21 +180,30 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true, error = null, page = 0) }
+                _uiState.update {
+                    it.copy(
+                        isLoading = true,
+                        error = null,
+                        page = 0,
+                        isLocalSearchActive = false,
+                        localSearchQuery = ""
+                    )
+                }
 
-                searchProducts.invoke(query                )
-                    .map { products -> applyLocalFilters(products, _uiState.value) }
-                    .combine(
-                        observeFavoriteIds().distinctUntilChanged()
-                    ) { products, favIds ->
+                searchProductsUseCase.invoke(query)
+                    .combine(observeFavoriteIdsUseCase().distinctUntilChanged()) { products, favIds ->
                         val favMap = products.associate { p -> p.id to favIds.contains(p.id) }
                         products to favMap
                     }
-                    .onStart {
-                        delay(500)
-                    }
-                    .catch { exception ->
-                        _uiState.update { it.copy(isLoading = false, error = exception.message) }
+                    .onStart { delay(500) }
+                    .catch { e ->
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = e.message ?: ErrorMessage.UNKNOWN.key,
+                                errorType = ErrorType.NetworkError
+                            )
+                        }
                     }
                     .collect { (products, favMap) ->
                         _uiState.update {
@@ -126,36 +212,22 @@ class HomeViewModel @Inject constructor(
                                 favoriteStates = favMap,
                                 isLoading = false,
                                 total = products.size,
-                                page = 1
+                                page = 1,
+                                isLocalSearchActive = false,
+                                localSearchQuery = ""
                             )
                         }
                     }
-            } catch (exception: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = exception.message) }
-            }
-        }
-    }
-
-    private fun applyLocalFilters(products: List<Product>, state: HomeUIState): List<Product> {
-        var filteredProducts = products
-
-        if (state.selectedBrands.isNotEmpty()) {
-            filteredProducts = filteredProducts.filter { product ->
-                state.selectedBrands.any { selectedBrand ->
-                    product.brand.trim().equals(selectedBrand.trim(), ignoreCase = true)
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: ErrorMessage.UNKNOWN.key,
+                        errorType = ErrorType.UnknownError
+                    )
                 }
             }
         }
-
-        if (state.selectedModels.isNotEmpty()) {
-            filteredProducts = filteredProducts.filter { product ->
-                state.selectedModels.any { selectedModel ->
-                    product.model.trim().equals(selectedModel.trim(), ignoreCase = true)
-                }
-            }
-        }
-
-        return filteredProducts
     }
 
     fun clearFilters() {
@@ -165,12 +237,12 @@ class HomeViewModel @Inject constructor(
                 selectedSortOrder = null,
                 selectedBrands = emptySet(),
                 selectedModels = emptySet(),
-                page = 0
+                page = 0,
+                isLocalSearchActive = false,
+                localSearchQuery = ""
             )
         }
         fetchProducts()
-
-        clearFilterViewModelFilters()
     }
 
     fun refreshHome() {
@@ -178,21 +250,20 @@ class HomeViewModel @Inject constructor(
         clearFilters()
     }
 
-    private fun clearFilterViewModelFilters() {
-    }
-
     fun addToCart(product: Product) {
         viewModelScope.launch {
             try {
-                addToCart.invoke(product, 1)
-
+                addToCartUseCase.invoke(product, 1)
                 _uiState.update { it.copy(animatedCartProductId = product.id) }
-
                 delay(2000)
                 _uiState.update { it.copy(animatedCartProductId = null) }
-
-            } catch (exception: Exception) {
-                _uiState.update { it.copy(error = exception.message) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = e.message ?: ErrorMessage.FAILED_ADD_CART.key,
+                        errorType = ErrorType.FailedAddCart
+                    )
+                }
             }
         }
     }
@@ -200,20 +271,22 @@ class HomeViewModel @Inject constructor(
     fun toggleFavorite(product: Product) {
         viewModelScope.launch {
             try {
-                val isCurrentlyFavorite = _uiState.value.favoriteStates[product.id] ?: false
-
-                if (isCurrentlyFavorite) {
-                    removeFromFavorites.invoke(product.id)
+                val isFav = _uiState.value.favoriteStates[product.id] ?: false
+                if (isFav) {
+                    removeFromFavoritesUseCase.invoke(product.id)
                 } else {
-                    addToFavorites.invoke(product)
-
+                    addToFavoritesUseCase.invoke(product)
                     _uiState.update { it.copy(animatedFavoriteProductId = product.id) }
-
                     delay(2000)
                     _uiState.update { it.copy(animatedFavoriteProductId = null) }
                 }
-            } catch (exception: Exception) {
-                _uiState.update { it.copy(error = exception.message) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        error = e.message ?: ErrorMessage.FAILED_TOGGLE_FAVORITE.key,
+                        errorType = ErrorType.FailedToggleFavorite
+                    )
+                }
             }
         }
     }
@@ -223,38 +296,34 @@ class HomeViewModel @Inject constructor(
             try {
                 _uiState.update { it.copy(isFilterDataLoading = true, filterError = null) }
 
-                getProducts().collect { products ->
-                    val normalizedProducts = products.map { product ->
-                        product.copy(
-                            brand = product.brand.trim(),
-                            model = product.model.trim()
-                        )
-                    }
+                val products = getProductsUseCase().first()
 
-                    val uniqueBrands = normalizedProducts.map { it.brand }.distinct().sorted()
-                    val uniqueModels = normalizedProducts.map { it.model }.distinct().sorted()
+                val normalized = products.map { p ->
+                    p.copy(brand = p.brand.trim(), model = p.model.trim())
+                }
 
-                    val brandModelMap = normalizedProducts.groupBy { it.brand }
-                        .mapValues { (_, products) ->
-                            products.map { it.model }.distinct().sorted()
-                        }
+                val uniqueBrands = normalized.map { it.brand }.distinct().sorted()
+                val uniqueModels = normalized.map { it.model }.distinct().sorted()
 
-                    _uiState.update {
-                        it.copy(
-                            allBrands = uniqueBrands,
-                            allModels = uniqueModels,
-                            filteredBrands = uniqueBrands,
-                            filteredModels = uniqueModels,
-                            brandModelMap = brandModelMap,
-                            isFilterDataLoading = false
-                        )
-                    }
+                val brandModelMap = normalized.groupBy { it.brand }
+                    .mapValues { (_, list) -> list.map { it.model }.distinct().sorted() }
+
+                _uiState.update {
+                    it.copy(
+                        allBrands = uniqueBrands,
+                        allModels = uniqueModels,
+                        filteredBrands = uniqueBrands,
+                        filteredModels = uniqueModels,
+                        brandModelMap = brandModelMap,
+                        isFilterDataLoading = false
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
                         isFilterDataLoading = false,
-                        filterError = e.message ?: R.string.error_failed_load_filter_data.toString()
+                        filterError = e.message ?: ErrorMessage.FAILED_LOAD_FILTER_DATA.key,
+                        errorType = ErrorType.FailedLoadFilterData
                     )
                 }
             }
@@ -262,57 +331,37 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleBrand(brand: String) {
-        val currentBrands = _uiState.value.selectedBrands.toMutableSet()
-        if (currentBrands.contains(brand)) {
-            currentBrands.remove(brand)
-        } else {
-            currentBrands.clear()
-            currentBrands.add(brand)
+        val current = _uiState.value.selectedBrands.toMutableSet()
+        if (current.contains(brand)) current.remove(brand)
+        else {
+            current.clear()
+            current.add(brand)
         }
-
-        _uiState.update {
-            it.copy(
-                selectedBrands = currentBrands,
-                selectedModels = emptySet()
-            )
-        }
+        _uiState.update { it.copy(selectedBrands = current, selectedModels = emptySet()) }
         updateFilteredModels()
     }
 
     fun toggleModel(model: String) {
-        val currentModels = _uiState.value.selectedModels.toMutableSet()
-        if (currentModels.contains(model)) {
-            currentModels.remove(model)
-        } else {
-            currentModels.clear()
-            currentModels.add(model)
+        val current = _uiState.value.selectedModels.toMutableSet()
+        if (current.contains(model)) current.remove(model)
+        else {
+            current.clear()
+            current.add(model)
         }
-        _uiState.update { it.copy(selectedModels = currentModels) }
+        _uiState.update { it.copy(selectedModels = current) }
     }
 
     fun setSorting(sortBy: String?, order: String?) {
-        _uiState.update {
-            it.copy(
-                selectedSortBy = sortBy,
-                selectedSortOrder = order
-            )
-        }
+        _uiState.update { it.copy(selectedSortBy = sortBy, selectedSortOrder = order) }
     }
 
     fun updateBrandSearch(query: String) {
-        val filteredBrands = if (query.isEmpty()) {
+        val filtered = if (query.isEmpty()) {
             _uiState.value.allBrands
         } else {
-            _uiState.value.allBrands.filter { brand ->
-                brand.contains(query, ignoreCase = true)
-            }
+            _uiState.value.allBrands.filter { it.contains(query, ignoreCase = true) }
         }
-        _uiState.update {
-            it.copy(
-                brandSearchQuery = query,
-                filteredBrands = filteredBrands
-            )
-        }
+        _uiState.update { it.copy(brandSearchQuery = query, filteredBrands = filtered) }
     }
 
     fun updateModelSearch(query: String) {
@@ -321,26 +370,18 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun updateFilteredModels() {
-        val currentState = _uiState.value
+        val st = _uiState.value
+        val availableModels = if (st.selectedBrands.isNotEmpty()) {
+            val selectedBrand = st.selectedBrands.first()
+            st.brandModelMap[selectedBrand] ?: emptyList()
+        } else st.allModels
 
-        val availableModels = if (currentState.selectedBrands.isNotEmpty()) {
-            val selectedBrand = currentState.selectedBrands.first()
-            currentState.brandModelMap[selectedBrand] ?: emptyList()
-        } else {
-            currentState.allModels
-        }
-
-        val filteredModels = if (currentState.modelSearchQuery.isEmpty()) {
+        val filtered = if (st.modelSearchQuery.isEmpty()) {
             availableModels
         } else {
-            availableModels.filter { model ->
-                model.contains(currentState.modelSearchQuery, ignoreCase = true)
-            }
+            availableModels.filter { it.contains(st.modelSearchQuery, ignoreCase = true) }
         }
-
-        _uiState.update {
-            it.copy(filteredModels = filteredModels)
-        }
+        _uiState.update { it.copy(filteredModels = filtered) }
     }
 
     fun applyFilters() {
@@ -348,68 +389,56 @@ class HomeViewModel @Inject constructor(
     }
 
     fun loadMoreProducts() {
-        val currentState = _uiState.value
-
-        if (currentState.isLoadingMore || currentState.isLoading) {
-            return
-        }
+        val snap = _uiState.value
+        if (snap.isLoadingMore || snap.isLoading || snap.isLocalSearchActive) return
 
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoadingMore = true) }
 
-                val nextPage = currentState.page + 1
-                val skip = (nextPage - 1) * currentState.pageSize
+                val nextPage = snap.page + 1
+                val skip = (nextPage - 1) * snap.pageSize
+                val brand = snap.selectedBrands.firstOrNull()
+                val model = snap.selectedModels.firstOrNull()
 
-                val selectedBrand = currentState.selectedBrands.firstOrNull()
-                val selectedModel = currentState.selectedModels.firstOrNull()
-
-                getProducts(
-                    limit = currentState.pageSize,
+                getProductsUseCase(
+                    limit = snap.pageSize,
                     skip = skip,
-                    sortBy = currentState.selectedSortBy,
-                    order = currentState.selectedSortOrder,
-                    brand = selectedBrand,
-                    model = selectedModel
+                    sortBy = snap.selectedSortBy,
+                    order = snap.selectedSortOrder,
+                    brand = brand,
+                    model = model
                 )
-                    .map { newProducts -> applyLocalFilters(newProducts, currentState) }
-                    .combine(
-                        observeFavoriteIds().distinctUntilChanged()
-                    ) { newProducts, favIds ->
+                    .combine(observeFavoriteIdsUseCase().distinctUntilChanged()) { newProducts, favIds ->
                         val favMap = newProducts.associate { p -> p.id to favIds.contains(p.id) }
                         newProducts to favMap
                     }
-                    .catch { exception ->
-                        _uiState.update {
-                            it.copy(
-                                isLoadingMore = false,
-                                error = exception.message
-                            )
-                        }
+                    .catch { e ->
+                        _uiState.update { it.copy(isLoadingMore = false, error = e.message) }
                     }
                     .collect { (newProducts, favMap) ->
-                        if (newProducts.isNotEmpty()) {
-                            val allProducts = currentState.products + newProducts
-                            val allFavMap = currentState.favoriteStates.toMutableMap()
-                            allFavMap.putAll(favMap)
-
-                            _uiState.update {
-                                it.copy(
-                                    products = allProducts,
-                                    favoriteStates = allFavMap,
+                        _uiState.update { st ->
+                            if (newProducts.isEmpty()) {
+                                st.copy(isLoadingMore = false)
+                            } else {
+                                val merged = (st.products + newProducts).distinctBy { it.id }
+                                val mergedFav =
+                                    st.favoriteStates.toMutableMap().apply { putAll(favMap) }
+                                originalProducts =
+                                    (originalProducts + newProducts).distinctBy { it.id }
+                                st.copy(
+                                    products = merged,
+                                    favoriteStates = mergedFav,
                                     isLoadingMore = false,
                                     page = nextPage,
-                                    total = allProducts.size
+                                    total = merged.size
                                 )
                             }
-                        } else {
-                            _uiState.update { it.copy(isLoadingMore = false) }
                         }
                     }
-            } catch (exception: Exception) {
-                _uiState.update { it.copy(isLoadingMore = false, error = exception.message) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoadingMore = false, error = e.message) }
             }
         }
     }
-
 }
